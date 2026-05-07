@@ -1,53 +1,103 @@
 @import "tailwindcss";
 
+:root {
+  --paper-white: #F9F6F0;
+  --paper-cream: #F5EFE5;
+  --paper-dark: #E8DFD3;
+  --newsprint-gray: #2A2A2A;
+  --ink-black: #0F0F0F;
+  --navy-deep: #0B1829;
+  --gold-primary: #C9A84C;
+  --gold-light: #E8CC7A;
+  --red-critical: #8B1A1A;
+  --red-bright: #C0392B;
+  --green-verified: #2D6A4F;
+  --amber-warn: #B8860B;
+  --serif-display: 'Playfair Display', Georgia, serif;
+  --serif-body: 'Crimson Pro', 'Lora', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--serif-body);
+  color: var(--newsprint-gray);
+  background: #1a1a1a;
+  line-height: 1.65;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* 3D NEWSPAPER BACKGROUND */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, #2a2416 0px, #3a3420 2px, #2a2416 4px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.3) 0px, transparent 1px, transparent 3px, rgba(0,0,0,.15) 4px);
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, rgba(0,0,0,.4) 0%, transparent 50%),
+    radial-gradient(circle at 20% 80%, rgba(255,255,255,.08), transparent 50%);
+  z-index: 0;
+}
+
+/* PRINT TEXTURE */
+.newspaper-texture::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.015) 2px, rgba(0,0,0,.015) 4px),
+    repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,.01) 2px, rgba(0,0,0,.01) 4px);
+  mix-blend-mode: multiply;
+  z-index: 5;
+}
+
+/* TAILWIND THEME OVERRIDES — Keep legacy tokens for any remaining references */
 @theme inline {
-  --color-tertiary-fixed: #ffdfa0;
-  --color-on-tertiary-fixed-variant: #5c4300;
-  --color-secondary: #5d5f5f;
-  --color-inverse-on-surface: #f2f0f2;
-  --color-surface-tint: #4f6073;
-  --color-on-surface-variant: #44474c;
-  --color-on-tertiary: #ffffff;
-  --color-surface: #fbf9fa;
-  --color-surface-bright: #fbf9fa;
+  --color-primary: #041627;
+  --color-primary-container: #1a2b3c;
   --color-on-primary: #ffffff;
-  --color-on-error: #ffffff;
-  --color-on-secondary-fixed: #1a1c1c;
+  --color-on-primary-container: #8192a7;
+  --color-secondary: #5d5f5f;
+  --color-secondary-container: #dfe0e0;
+  --color-on-secondary: #ffffff;
+  --color-surface: #F9F6F0;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f5f3f4;
+  --color-surface-container: #efedef;
+  --color-surface-container-high: #e9e7e9;
   --color-on-background: #1b1c1d;
+  --color-on-surface: #1b1c1d;
+  --color-on-surface-variant: #44474c;
   --color-outline: #74777d;
   --color-outline-variant: #c4c6cd;
-  --color-inverse-primary: #b7c8de;
-  --color-background: #fbf9fa;
-  --color-secondary-fixed: #e2e2e2;
-  --color-tertiary: #1e1300;
-  --color-primary-container: #1a2b3c;
-  --color-on-secondary-fixed-variant: #454747;
-  --color-surface-container-low: #f5f3f4;
-  --color-on-primary-fixed: #0b1d2d;
   --color-error: #ba1a1a;
   --color-error-container: #ffdad6;
-  --color-surface-container-highest: #e4e2e3;
-  --color-on-tertiary-container: #b88900;
-  --color-on-primary-container: #8192a7;
-  --color-primary: #041627;
-  --color-surface-container: #efedef;
-  --color-secondary-container: #dfe0e0;
-  --color-surface-container-high: #e9e7e9;
-  --color-primary-fixed: #d2e4fb;
-  --color-surface-dim: #dbd9db;
-  --color-on-surface: #1b1c1d;
-  --color-on-tertiary-fixed: #261a00;
-  --color-primary-fixed-dim: #b7c8de;
-  --color-surface-container-lowest: #ffffff;
-  --color-inverse-surface: #303032;
-  --color-secondary-fixed-dim: #c6c6c7;
-  --color-on-secondary: #ffffff;
+  --color-on-error: #ffffff;
   --color-on-error-container: #93000a;
-  --color-on-secondary-container: #616363;
-  --color-on-primary-fixed-variant: #38485a;
-  --color-tertiary-fixed-dim: #f8bd2a;
-  --color-tertiary-container: #372700;
-  --color-surface-variant: #e4e2e3;
+  --color-background: #F9F6F0;
+  --color-tertiary-fixed: #ffdfa0;
 
   --spacing-xs: 4px;
   --spacing-sm: 8px;
@@ -56,19 +106,100 @@
   --spacing-xl: 32px;
   --spacing-gutter: 24px;
 
-  --font-headline-serif: 'Newsreader', serif;
-  --font-data-body: 'Inter', sans-serif;
-  --font-summary-body: 'Newsreader', serif;
-  --font-data-header: 'Inter', sans-serif;
-  --font-label-caps: 'Inter', sans-serif;
-  --font-display-serif: 'Newsreader', serif;
-  --font-caption: 'Inter', sans-serif;
+  --font-headline-serif: 'Playfair Display', Georgia, serif;
+  --font-data-body: 'DM Sans', sans-serif;
+  --font-summary-body: 'Crimson Pro', Georgia, serif;
+  --font-data-header: 'DM Sans', sans-serif;
+  --font-label-caps: 'DM Sans', sans-serif;
+  --font-display-serif: 'Playfair Display', Georgia, serif;
+  --font-caption: 'DM Sans', sans-serif;
 }
 
-body {
-  background-color: var(--color-background);
-  color: var(--color-on-background);
-  font-family: var(--font-data-body);
+/* SCROLLBAR STYLING */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--paper-cream); }
+::-webkit-scrollbar-thumb { background: var(--newsprint-gray); opacity: 0.4; border-radius: 3px; }
+
+/* NEWSPAPER-SPECIFIC UTILITIES */
+.font-display { font-family: var(--serif-display); }
+.font-body-serif { font-family: var(--serif-body); }
+.font-sans-news { font-family: var(--sans); }
+
+/* PRINT RULE UTILITY */
+.rule-thick { border-top: 2px solid var(--newsprint-gray); }
+.rule-thin { border-top: 1px solid rgba(0,0,0,0.15); }
+.rule-dashed { border-top: 1px dashed rgba(0,0,0,0.15); }
+
+/* TICKER ANIMATION */
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-scroll { animation: ticker-scroll 30s linear infinite; }
+
+/* PULSE */
+@keyframes news-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.news-pulse { animation: news-pulse 1.5s ease-in-out infinite; }
+
+/* UNFOLD PAGE */
+@keyframes unfoldPage {
+  0% { transform: perspective(1200px) rotateX(45deg); opacity: 0; }
+  100% { transform: perspective(1200px) rotateX(0deg); opacity: 1; }
+}
+.unfold-anim { animation: unfoldPage 1.2s cubic-bezier(.34,.1,.68,1) both; }
+
+/* SLIDE UP */
+@keyframes slideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.slide-up { animation: slideUp .4s cubic-bezier(.34,.1,.68,1); }
+
+/* FADE IN */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in-up { animation: fadeInUp .6s ease both; }
+
+.stagger-1 { animation-delay: .1s; opacity: 0; animation-fill-mode: both; }
+.stagger-2 { animation-delay: .2s; opacity: 0; animation-fill-mode: both; }
+.stagger-3 { animation-delay: .3s; opacity: 0; animation-fill-mode: both; }
+.stagger-4 { animation-delay: .4s; opacity: 0; animation-fill-mode: both; }
+.stagger-5 { animation-delay: .5s; opacity: 0; animation-fill-mode: both; }
+
+/* FILING DESK DRAG */
+.filing-desk-drag {
+  border-color: var(--red-bright) !important;
+  background: rgba(139,26,26,.04) !important;
+}
+
+/* FILE INPUT HIDE */
+input[type="file"].hidden-input { display: none; }
+
+/* MODAL ANIMATION */
+@keyframes modalIn {
+  from { transform: translateY(30px) scale(0.97); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+.modal-in { animation: modalIn .3s cubic-bezier(.34,.1,.68,1); }
+
+/* RESPONSIVE BREAKPOINTS */
+@media (max-width: 1024px) {
+  .newspaper-grid { grid-template-columns: 1fr !important; }
+  .front-grid { grid-template-columns: 1fr !important; }
+  .story-grid { grid-template-columns: 1fr !important; }
+  .clippings-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important; }
+}
+
+@media (max-width: 768px) {
+  .masthead-inner { flex-direction: column !important; gap: 0.75rem !important; }
+  .masthead-meta { flex-wrap: wrap !important; }
+  .clippings-grid { grid-template-columns: 1fr !important; }
+  .timeline-track { flex-wrap: wrap !important; }
 }
 
 .material-symbols-outlined {

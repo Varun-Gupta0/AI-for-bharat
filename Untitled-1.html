@@ -1,0 +1,2079 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NyayaLens — Living Legal Newspaper</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --paper-white: #F9F6F0;
+            --paper-cream: #F5EFE5;
+            --paper-dark: #E8DFD3;
+            --newsprint-gray: #2A2A2A;
+            --ink-black: #0F0F0F;
+            --navy-deep: #0B1829;
+            --gold-primary: #C9A84C;
+            --gold-light: #E8CC7A;
+            --red-critical: #8B1A1A;
+            --red-bright: #C0392B;
+            --green-verified: #2D6A4F;
+            --amber-warn: #B8860B;
+            --serif-display: 'Playfair Display', Georgia, serif;
+            --serif-body: 'Crimson Pro', 'Lora', Georgia, serif;
+            --sans: 'DM Sans', system-ui, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            background: #1a1a1a
+        }
+
+        body {
+            font-family: var(--serif-body);
+            color: var(--newsprint-gray);
+            background: #1a1a1a;
+            line-height: 1.65;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* 3D NEWSPAPER BACKGROUND */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                /* wooden table texture */
+                repeating-linear-gradient(90deg, #2a2416 0px, #3a3420 2px, #2a2416 4px),
+                repeating-linear-gradient(0deg, rgba(0, 0, 0, .3) 0px, transparent 1px, transparent 3px, rgba(0, 0, 0, .15) 4px);
+            z-index: 0;
+        }
+
+        /* NEWSPAPER PAGES STACK */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(135deg, rgba(0, 0, 0, .4) 0%, transparent 50%),
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, .08), transparent 50%);
+            z-index: 0;
+        }
+
+        /* NEWSPAPER SHEET 3 (BACK) */
+        .newspaper-layer-back {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .newspaper-layer-back::before {
+            content: '';
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1300px;
+            height: calc(100vh - 120px);
+            background: var(--paper-cream);
+            box-shadow:
+                0 30px 60px rgba(0, 0, 0, .4),
+                inset -2px -2px 8px rgba(0, 0, 0, .15),
+                inset 2px 2px 8px rgba(255, 255, 255, .1);
+            transform: translateX(-50%) perspective(1200px) rotateY(3deg) rotateX(2deg);
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* NEWSPAPER SHEET 2 (MIDDLE) */
+        .newspaper-layer-mid {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .newspaper-layer-mid::before {
+            content: '';
+            position: absolute;
+            top: 55px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1300px;
+            height: calc(100vh - 110px);
+            background: var(--paper-dark);
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, .35),
+                inset -1px -1px 6px rgba(0, 0, 0, .2),
+                inset 1px 1px 6px rgba(255, 255, 255, .08);
+            transform: translateX(-50%) perspective(1200px) rotateY(-2deg) rotateX(1deg);
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* NEWSPAPER SHEET 1 (FRONT) */
+        .newspaper-layer-front {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .newspaper-layer-front::before {
+            content: '';
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1300px;
+            height: calc(100vh - 100px);
+            background: var(--paper-white);
+            box-shadow:
+                0 20px 80px rgba(0, 0, 0, .5),
+                inset -3px -3px 12px rgba(0, 0, 0, .1),
+                inset 3px 3px 12px rgba(255, 255, 255, .15),
+                /* page curl effect */
+                -8px 0 20px rgba(0, 0, 0, .3);
+            border-radius: 0 10px 10px 0;
+            border-left: 1px solid rgba(0, 0, 0, .08);
+        }
+
+        /* PRINT TEXTURE - NEWSPAPER GRAIN */
+        #app::before,
+        #landing::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, .015) 2px, rgba(0, 0, 0, .015) 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 0, 0, .01) 2px, rgba(0, 0, 0, .01) 4px);
+            mix-blend-mode: multiply;
+            z-index: 5;
+        }
+
+        /* CONTENT SITS ON TOP */
+        #landing,
+        #app {
+            position: relative;
+            z-index: 6;
+            background: transparent;
+        }
+
+        /* MASTHEAD / HEADER */
+        .masthead {
+            background: var(--paper-white);
+            border-bottom: 2px solid var(--newsprint-gray);
+            padding: 1.2rem 2.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 101;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+        }
+
+        .masthead-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .masthead-title {
+            font-family: var(--serif-display);
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: -.03em;
+            text-transform: uppercase;
+            line-height: .95;
+            color: var(--ink-black);
+        }
+
+        .masthead-title span {
+            font-style: italic;
+            color: var(--red-bright);
+        }
+
+        .masthead-meta {
+            font-family: var(--sans);
+            font-size: .65rem;
+            letter-spacing: .35em;
+            text-transform: uppercase;
+            color: var(--newsprint-gray);
+            font-weight: 500;
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .masthead-meta-sep {
+            width: 1px;
+            height: 12px;
+            background: var(--newsprint-gray);
+            opacity: .3;
+        }
+
+        .masthead-actions {
+            display: flex;
+            gap: .8rem;
+            align-items: center;
+        }
+
+        .btn-header {
+            background: none;
+            border: 1px solid var(--newsprint-gray);
+            cursor: pointer;
+            padding: .35rem .8rem;
+            font-family: var(--sans);
+            font-size: .7rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--newsprint-gray);
+            transition: all .25s;
+            font-weight: 600;
+        }
+
+        .btn-header:hover {
+            background: var(--newsprint-gray);
+            color: var(--paper-white)
+        }
+
+        .role-badge {
+            background: var(--gold-primary);
+            color: var(--ink-black);
+            padding: .3rem .7rem;
+            font-family: var(--sans);
+            font-size: .65rem;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .role-badge.officer {
+            background: var(--red-critical);
+            color: white
+        }
+
+        /* LANDING PAGE */
+        #landing {
+            min-height: 100vh;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            z-index: 6;
+        }
+
+        /* NEWSPAPER UNFOLD ANIMATION */
+        @keyframes unfoldPage {
+            0% {
+                transform: perspective(1200px) rotateX(45deg);
+                opacity: 0
+            }
+
+            100% {
+                transform: perspective(1200px) rotateX(0deg);
+                opacity: 1
+            }
+        }
+
+        .landing-content {
+            max-width: 1200px;
+            animation: unfoldPage 1.2s cubic-bezier(.34, .1, .68, 1) both;
+        }
+
+        .front-page {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2.5rem;
+            padding: 3rem 2.5rem;
+            border: 1px solid var(--newsprint-gray);
+            background: var(--paper-white);
+            position: relative;
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, .1),
+                inset 0 -100px 200px rgba(0, 0, 0, .02);
+        }
+
+        /* MASTHEAD RULES */
+        .front-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: repeating-linear-gradient(90deg,
+                    var(--newsprint-gray) 0px,
+                    var(--newsprint-gray) 20px,
+                    transparent 20px,
+                    transparent 40px);
+        }
+
+        /* MAIN FEATURE COLUMN */
+        .feature-col {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem
+        }
+
+        .page-hed-group {
+            border-bottom: 2px solid var(--newsprint-gray);
+            padding-bottom: 1rem;
+        }
+
+        .page-edition {
+            font-family: var(--sans);
+            font-size: .7rem;
+            letter-spacing: .25em;
+            text-transform: uppercase;
+            color: var(--newsprint-gray);
+            margin-bottom: .5rem;
+            font-weight: 600;
+        }
+
+        .page-date {
+            font-family: var(--sans);
+            font-size: .75rem;
+            letter-spacing: .08em;
+            color: var(--newsprint-gray);
+            opacity: .6;
+            margin-bottom: .8rem;
+        }
+
+        /* ROLE ENTRY BLOCKS (FEATURE ARTICLES) */
+        .feature-article {
+            cursor: pointer;
+            transition: all .35s cubic-bezier(.25, .46, .45, .94);
+            padding: 1.5rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, .08);
+            position: relative;
+        }
+
+        .feature-article:last-child {
+            border: none
+        }
+
+        .feature-article:hover {
+            transform: translateX(8px);
+        }
+
+        .feature-article:hover .feature-hed {
+            color: var(--red-bright);
+        }
+
+        .feature-hed {
+            font-family: var(--serif-display);
+            font-size: clamp(1.4rem, 4vw, 2.4rem);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -.02em;
+            color: var(--ink-black);
+            margin-bottom: .5rem;
+            transition: color .3s;
+        }
+
+        .feature-article.citizen .feature-hed {
+            color: var(--green-verified)
+        }
+
+        .feature-subhed {
+            font-family: var(--serif-body);
+            font-size: 1.1rem;
+            font-style: italic;
+            color: var(--newsprint-gray);
+            margin-bottom: 1rem;
+            opacity: .85;
+            line-height: 1.5;
+        }
+
+        .feature-byline {
+            font-family: var(--sans);
+            font-size: .7rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--newsprint-gray);
+            opacity: .5;
+            margin-bottom: .8rem;
+        }
+
+        .feature-desc {
+            font-family: var(--serif-body);
+            font-size: .95rem;
+            color: var(--newsprint-gray);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+            columns: 2;
+            column-gap: 1.5rem;
+        }
+
+        .feature-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            font-family: var(--sans);
+            font-size: .75rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--ink-black);
+            font-weight: 700;
+            transition: gap .25s;
+        }
+
+        .feature-article:hover .feature-cta {
+            gap: .8rem
+        }
+
+        .feature-cta::after {
+            content: '→';
+            transition: transform .25s
+        }
+
+        .feature-article:hover .feature-cta::after {
+            transform: translateX(3px)
+        }
+
+        /* SIDEBAR: EDITORIAL INDEX */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .sidebar-section {
+            border: 1px solid rgba(0, 0, 0, .15);
+            padding: 1.2rem;
+            background: rgba(0, 0, 0, .02);
+        }
+
+        .sidebar-hed {
+            font-family: var(--serif-display);
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            margin-bottom: .8rem;
+            padding-bottom: .6rem;
+            border-bottom: 2px solid var(--newsprint-gray);
+            color: var(--ink-black);
+        }
+
+        .sidebar-item {
+            font-family: var(--sans);
+            font-size: .75rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--newsprint-gray);
+            padding: .4rem 0;
+            border-bottom: 1px dotted rgba(0, 0, 0, .1);
+            cursor: pointer;
+            transition: color .2s;
+        }
+
+        .sidebar-item:last-child {
+            border: none
+        }
+
+        .sidebar-item:hover {
+            color: var(--red-bright)
+        }
+
+        /* TICKER / BREAKING NEWS */
+        .breaking-banner {
+            background: var(--red-bright);
+            color: white;
+            padding: .6rem 1rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .breaking-label {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            font-family: var(--sans);
+            font-size: .65rem;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            font-weight: 800;
+            margin-right: 1.2rem;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .breaking-label::before {
+            content: '⚠';
+            font-size: .9rem
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .6
+            }
+        }
+
+        .breaking-scroll {
+            display: inline-block;
+            white-space: nowrap;
+            animation: scroll 30s linear infinite;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0)
+            }
+
+            100% {
+                transform: translateX(-100%)
+            }
+        }
+
+        /* APP STATE */
+        #app {
+            display: none;
+            background: var(--paper-white);
+            min-height: 100vh
+        }
+
+        .newspaper-spread {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2.5rem;
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 3rem;
+        }
+
+        /* MAIN EDITORIAL COLUMN */
+        .editorial-column {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+        }
+
+        /* BREAKING LEGAL STRIP */
+        .legal-bulletin {
+            border-left: 4px solid var(--red-bright);
+            background: rgba(139, 26, 26, .05);
+            padding: 1.2rem 1.5rem;
+            position: relative;
+        }
+
+        .bulletin-hed {
+            font-family: var(--sans);
+            font-size: .7rem;
+            letter-spacing: .25em;
+            text-transform: uppercase;
+            color: var(--red-bright);
+            font-weight: 800;
+            margin-bottom: .5rem;
+        }
+
+        .bulletin-text {
+            font-family: var(--serif-body);
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--newsprint-gray);
+        }
+
+        /* FRONT PAGE FEATURE STORY */
+        .front-page-story {
+            border: 2px solid var(--newsprint-gray);
+            padding: 2rem 2.2rem;
+            background: var(--paper-white);
+            position: relative;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
+        }
+
+        .front-page-story::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: repeating-linear-gradient(90deg, var(--newsprint-gray) 0px, var(--newsprint-gray) 15px, transparent 15px, transparent 30px);
+        }
+
+        .story-meta {
+            font-family: var(--sans);
+            font-size: .65rem;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--newsprint-gray);
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .meta-tag {
+            padding: .2rem .6rem;
+            background: rgba(0, 0, 0, .08);
+            font-weight: 600
+        }
+
+        .risk-badge {
+            border: 1px solid;
+            padding: .2rem .5rem;
+            font-weight: 700;
+            font-size: .62rem;
+            letter-spacing: .1em;
+        }
+
+        .risk-critical {
+            border-color: var(--red-bright);
+            color: var(--red-bright)
+        }
+
+        .risk-high {
+            border-color: var(--amber-warn);
+            color: var(--amber-warn)
+        }
+
+        .risk-medium {
+            border-color: var(--gold-primary);
+            color: var(--gold-primary)
+        }
+
+        .risk-low {
+            border-color: var(--green-verified);
+            color: var(--green-verified)
+        }
+
+        .story-hed {
+            font-family: var(--serif-display);
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -.03em;
+            color: var(--ink-black);
+            margin-bottom: .8rem;
+        }
+
+        .story-subhed {
+            font-family: var(--serif-body);
+            font-size: 1.3rem;
+            font-style: italic;
+            color: var(--newsprint-gray);
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, .15);
+            opacity: .85;
+        }
+
+        .story-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .story-column {
+            font-family: var(--serif-body);
+            font-size: .98rem;
+            color: var(--newsprint-gray);
+            line-height: 1.75;
+            column-rule: 1px solid rgba(0, 0, 0, .1);
+        }
+
+        .story-column p {
+            margin-bottom: .8rem
+        }
+
+        .story-data {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1px;
+            background: var(--newsprint-gray);
+            margin: 2rem 0;
+        }
+
+        .data-cell {
+            background: var(--paper-white);
+            padding: 1rem;
+            border-right: 1px solid var(--newsprint-gray);
+            border-bottom: 1px solid var(--newsprint-gray);
+        }
+
+        .data-cell:nth-child(2n) {
+            border-right: none
+        }
+
+        .data-cell:nth-last-child(-n+2) {
+            border-bottom: none
+        }
+
+        .data-label {
+            font-family: var(--sans);
+            font-size: .65rem;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--newsprint-gray);
+            opacity: .6;
+            margin-bottom: .3rem;
+            font-weight: 600;
+        }
+
+        .data-value {
+            font-family: var(--serif-display);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--ink-black);
+            line-height: 1;
+        }
+
+        .data-value.critical {
+            color: var(--red-bright)
+        }
+
+        .data-value.urgent {
+            color: var(--amber-warn)
+        }
+
+        /* EDITORIAL INTELLIGENCE */
+        .editorial-intelligence {
+            border: 2px dashed var(--gold-primary);
+            padding: 1.5rem;
+            background: rgba(201, 168, 76, .08);
+            position: relative;
+            font-style: italic;
+        }
+
+        .editorial-intelligence::before {
+            content: 'EDITORIAL INTELLIGENCE';
+            position: absolute;
+            top: -1px;
+            left: 1rem;
+            font-family: var(--sans);
+            font-size: .6rem;
+            letter-spacing: .25em;
+            background: var(--paper-white);
+            color: var(--gold-primary);
+            padding: .2rem .5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .editorial-text {
+            font-family: var(--serif-body);
+            font-size: 1rem;
+            color: var(--newsprint-gray);
+            line-height: 1.7;
+            margin-top: .5rem;
+        }
+
+        .editorial-text strong {
+            font-weight: 600;
+            color: var(--ink-black);
+            font-style: normal;
+        }
+
+        .editorial-note {
+            background: rgba(0, 0, 0, .04);
+            border-left: 3px solid var(--gold-primary);
+            padding: .8rem;
+            margin-top: 1rem;
+            font-family: var(--sans);
+            font-size: .85rem;
+            font-style: normal;
+        }
+
+        /* PUBLIC UNDERSTANDING */
+        .citizen-explainer {
+            background: rgba(45, 106, 79, .06);
+            border-left: 4px solid var(--green-verified);
+            padding: 1.8rem;
+            margin: 2rem 0;
+        }
+
+        .citizen-explainer.hidden {
+            display: none
+        }
+
+        .explainer-hed {
+            font-family: var(--serif-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--ink-black);
+            margin-bottom: 1rem;
+        }
+
+        .explainer-byline {
+            font-family: var(--sans);
+            font-size: .68rem;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: var(--green-verified);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .explainer-body {
+            font-family: var(--serif-body);
+            font-size: .98rem;
+            color: var(--newsprint-gray);
+            line-height: 1.8;
+        }
+
+        .explainer-body p {
+            margin-bottom: .7rem
+        }
+
+        .explainer-highlight {
+            background: rgba(45, 106, 79, .2);
+            color: var(--green-verified);
+            padding: .1rem .4rem;
+            font-weight: 600;
+        }
+
+        /* FILING DESK */
+        .filing-desk {
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, var(--paper-white), var(--paper-cream));
+            border: 2px dashed var(--newsprint-gray);
+            position: relative;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all .35s;
+            overflow: hidden;
+        }
+
+        .filing-desk::before {
+            content: 'NYAYALENS FILING DESK';
+            position: absolute;
+            top: 1.5rem;
+            left: 2rem;
+            right: 2rem;
+            font-family: var(--serif-display);
+            font-size: 3rem;
+            font-weight: 900;
+            color: rgba(0, 0, 0, .04);
+            text-align: center;
+            letter-spacing: .05em;
+            line-height: .9;
+            pointer-events: none;
+        }
+
+        .filing-desk:hover {
+            border-color: var(--gold-primary);
+            background: linear-gradient(135deg, rgba(201, 168, 76, .05), rgba(201, 168, 76, .02));
+        }
+
+        .filing-desk.drag {
+            border-color: var(--red-bright);
+            background: rgba(139, 26, 26, .04);
+        }
+
+        .filing-content {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .filing-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            opacity: .6;
+        }
+
+        .filing-title {
+            font-family: var(--serif-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            color: var(--ink-black);
+            margin-bottom: .5rem;
+        }
+
+        .filing-sub {
+            font-family: var(--serif-body);
+            font-size: 1rem;
+            color: var(--newsprint-gray);
+            line-height: 1.6;
+            opacity: .7;
+            margin-bottom: 1.5rem;
+        }
+
+        .filing-btn {
+            background: var(--ink-black);
+            color: var(--paper-white);
+            border: none;
+            cursor: pointer;
+            padding: .6rem 1.8rem;
+            font-family: var(--sans);
+            font-size: .75rem;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            font-weight: 700;
+            transition: all .25s;
+        }
+
+        .filing-btn:hover {
+            background: var(--newsprint-gray)
+        }
+
+        .filing-hint {
+            margin-top: 1.5rem;
+            font-family: var(--sans);
+            font-size: .68rem;
+            letter-spacing: .1em;
+            color: var(--newsprint-gray);
+            opacity: .5;
+        }
+
+        input[type="file"] {
+            display: none
+        }
+
+        .file-uploaded {
+            display: none;
+            align-items: center;
+            gap: 1.5rem;
+            background: rgba(45, 106, 79, .08);
+            border: 1px solid var(--green-verified);
+            padding: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        .file-uploaded.show {
+            display: flex
+        }
+
+        .file-icon {
+            font-size: 2rem;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-family: var(--sans);
+            font-size: .85rem;
+            color: var(--ink-black);
+            font-weight: 600;
+            margin-bottom: .2rem;
+        }
+
+        .file-size {
+            font-family: var(--sans);
+            font-size: .7rem;
+            color: var(--newsprint-gray);
+        }
+
+        .file-analyze {
+            background: var(--green-verified);
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: .5rem 1.2rem;
+            font-family: var(--sans);
+            font-size: .7rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            font-weight: 700;
+            transition: all .25s;
+        }
+
+        .file-analyze:hover {
+            opacity: .85
+        }
+
+        /* ARCHIVED PROCEEDINGS */
+        .past-editions {
+            margin-top: 3rem;
+        }
+
+        .past-editions-hed {
+            font-family: var(--serif-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            color: var(--ink-black);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--newsprint-gray);
+        }
+
+        .clippings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .case-clipping {
+            border: 1px solid var(--newsprint-gray);
+            padding: 1rem;
+            background: var(--paper-cream);
+            cursor: pointer;
+            transition: all .3s cubic-bezier(.25, .46, .45, .94);
+            position: relative;
+            box-shadow: 2px 2px 0px rgba(0, 0, 0, .1);
+        }
+
+        .case-clipping:hover {
+            transform: translateY(-4px);
+            box-shadow: 4px 8px 16px rgba(0, 0, 0, .12);
+        }
+
+        .clipping-dept {
+            font-family: var(--sans);
+            font-size: .65rem;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: var(--newsprint-gray);
+            opacity: .6;
+            margin-bottom: .4rem;
+            font-weight: 600;
+        }
+
+        .clipping-hed {
+            font-family: var(--serif-display);
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1.3;
+            color: var(--ink-black);
+            margin-bottom: .6rem;
+            letter-spacing: -.01em;
+        }
+
+        .clipping-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: .5rem;
+            padding-top: .8rem;
+            border-top: 1px dotted rgba(0, 0, 0, .15);
+        }
+
+        .clipping-date {
+            font-family: var(--sans);
+            font-size: .65rem;
+            color: var(--newsprint-gray);
+            opacity: .5;
+        }
+
+        .clipping-status {
+            font-family: var(--sans);
+            font-size: .6rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            font-weight: 700;
+            padding: .15rem .4rem;
+            border: 1px solid;
+        }
+
+        .status-pending {
+            border-color: var(--amber-warn);
+            color: var(--amber-warn)
+        }
+
+        .status-verified {
+            border-color: var(--green-verified);
+            color: var(--green-verified)
+        }
+
+        .status-critical {
+            border-color: var(--red-bright);
+            color: var(--red-bright)
+        }
+
+        /* DAILY PROCEEDINGS TIMELINE */
+        .proceedings-timeline {
+            margin: 3rem 0;
+            padding: 2rem;
+            border: 2px solid var(--newsprint-gray);
+            background: var(--paper-cream);
+            position: relative;
+        }
+
+        .proceedings-hed {
+            font-family: var(--serif-display);
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            margin-bottom: 1.5rem;
+            color: var(--ink-black);
+        }
+
+        .timeline-track {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .timeline-step {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .timeline-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            right: -50%;
+            height: 2px;
+            background: rgba(0, 0, 0, .1);
+            z-index: 0;
+        }
+
+        .timeline-step.done:not(:last-child)::after {
+            background: var(--green-verified);
+        }
+
+        .timeline-step.active:not(:last-child)::after {
+            background: var(--gold-primary);
+        }
+
+        .timeline-node {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 0, 0, .2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--paper-white);
+            z-index: 1;
+            font-family: var(--sans);
+            font-weight: 700;
+            font-size: .75rem;
+            color: var(--newsprint-gray);
+            transition: all .3s;
+        }
+
+        .timeline-step.done .timeline-node {
+            background: var(--green-verified);
+            border-color: var(--green-verified);
+            color: white;
+        }
+
+        .timeline-step.active .timeline-node {
+            background: var(--gold-primary);
+            border-color: var(--gold-primary);
+            color: var(--ink-black);
+            box-shadow: 0 0 0 6px rgba(201, 168, 76, .2);
+        }
+
+        .timeline-label {
+            font-family: var(--sans);
+            font-size: .7rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--newsprint-gray);
+            margin-top: .8rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .timeline-step.done .timeline-label {
+            color: var(--green-verified)
+        }
+
+        .timeline-step.active .timeline-label {
+            color: var(--gold-primary)
+        }
+
+        /* RIGHT SIDEBAR: NOTICES & CALENDAR */
+        .notices-column {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .notice-section {
+            border: 1px solid var(--newsprint-gray);
+            padding: 1.2rem;
+        }
+
+        .notice-hed {
+            font-family: var(--serif-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            margin-bottom: .8rem;
+            padding-bottom: .6rem;
+            border-bottom: 2px solid var(--newsprint-gray);
+            color: var(--ink-black);
+        }
+
+        .notice-pin {
+            display: flex;
+            gap: .8rem;
+            margin-bottom: .8rem;
+            padding: .8rem;
+            background: rgba(0, 0, 0, .04);
+            border-left: 3px solid;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .notice-pin:hover {
+            background: rgba(0, 0, 0, .08)
+        }
+
+        .notice-pin.critical {
+            border-color: var(--red-bright)
+        }
+
+        .notice-pin.warning {
+            border-color: var(--amber-warn)
+        }
+
+        .notice-pin.info {
+            border-color: var(--gold-primary)
+        }
+
+        .pin-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: .3rem;
+            flex-shrink: 0;
+        }
+
+        .notice-pin.critical .pin-dot {
+            background: var(--red-bright)
+        }
+
+        .notice-pin.warning .pin-dot {
+            background: var(--amber-warn)
+        }
+
+        .notice-pin.info .pin-dot {
+            background: var(--gold-primary)
+        }
+
+        .pin-text {
+            font-family: var(--serif-body);
+            font-size: .85rem;
+            color: var(--newsprint-gray);
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .pin-text strong {
+            color: var(--ink-black);
+            font-weight: 600;
+        }
+
+        .pin-date {
+            font-family: var(--sans);
+            font-size: .65rem;
+            color: var(--newsprint-gray);
+            opacity: .5;
+            margin-top: .3rem;
+        }
+
+        /* COURT CALENDAR */
+        .calendar-box {
+            border: 1px solid var(--newsprint-gray);
+            padding: 1.2rem;
+        }
+
+        .calendar-hed {
+            font-family: var(--serif-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            margin-bottom: .8rem;
+            padding-bottom: .6rem;
+            border-bottom: 2px solid var(--newsprint-gray);
+            color: var(--ink-black);
+        }
+
+        .calendar-entry {
+            padding: .8rem 0;
+            border-bottom: 1px dotted rgba(0, 0, 0, .1);
+            display: grid;
+            grid-template-columns: 50px 1fr;
+            gap: 1rem;
+        }
+
+        .calendar-entry:last-child {
+            border: none
+        }
+
+        .calendar-date {
+            font-family: var(--serif-display);
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--gold-primary);
+            line-height: 1;
+            text-align: center;
+        }
+
+        .calendar-month {
+            font-family: var(--sans);
+            font-size: .6rem;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: var(--newsprint-gray);
+            opacity: .6;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .calendar-info {
+            flex: 1;
+        }
+
+        .calendar-title {
+            font-family: var(--serif-body);
+            font-size: .85rem;
+            color: var(--ink-black);
+            line-height: 1.4;
+            font-weight: 600;
+        }
+
+        .calendar-sub {
+            font-family: var(--sans);
+            font-size: .7rem;
+            color: var(--newsprint-gray);
+            opacity: .6;
+            margin-top: .2rem;
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .6);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-overlay.open {
+            display: flex
+        }
+
+        .modal {
+            background: var(--paper-white);
+            border: 2px solid var(--newsprint-gray);
+            max-width: 600px;
+            width: 100%;
+            padding: 2.5rem;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+            animation: slideUp .3s cubic-bezier(.34, .1, .68, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(40px);
+                opacity: 0
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--newsprint-gray);
+            transition: color .2s;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--ink-black)
+        }
+
+        .modal-hed {
+            font-family: var(--serif-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            margin-bottom: .5rem;
+            color: var(--ink-black);
+        }
+
+        .modal-sub {
+            font-family: var(--sans);
+            font-size: .8rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--newsprint-gray);
+            margin-bottom: 1.5rem;
+            opacity: .6;
+        }
+
+        .modal-body {
+            font-family: var(--serif-body);
+            font-size: .95rem;
+            color: var(--newsprint-gray);
+            line-height: 1.75;
+        }
+
+        .modal-body p {
+            margin-bottom: .8rem
+        }
+
+        /* ANIMATIONS */
+        .fade-in {
+            animation: fadeIn .6s ease forwards
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .stagger-1 {
+            animation-delay: .1s;
+            opacity: 0
+        }
+
+        .stagger-2 {
+            animation-delay: .2s;
+            opacity: 0
+        }
+
+        .stagger-3 {
+            animation-delay: .3s;
+            opacity: 0
+        }
+
+        .stagger-4 {
+            animation-delay: .4s;
+            opacity: 0
+        }
+
+        .stagger-5 {
+            animation-delay: .5s;
+            opacity: 0
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:1024px) {
+            .newspaper-spread {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                padding: 2rem
+            }
+
+            .front-page {
+                grid-template-columns: 1fr
+            }
+
+            .story-body {
+                grid-template-columns: 1fr
+            }
+
+            .story-column {
+                column-count: 1
+            }
+
+            .clippings-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr))
+            }
+        }
+
+        @media(max-width:768px) {
+            .masthead {
+                padding: 1rem 1.5rem
+            }
+
+            .masthead-inner {
+                flex-direction: column;
+                gap: 1rem
+            }
+
+            .masthead-meta {
+                flex-wrap: wrap;
+                font-size: .6rem;
+                gap: 1rem
+            }
+
+            .feature-desc {
+                columns: 1
+            }
+
+            .timeline-track {
+                flex-wrap: wrap
+            }
+
+            .timeline-step::after {
+                display: none
+            }
+
+            .clippings-grid {
+                grid-template-columns: 1fr
+            }
+
+            .data-value {
+                font-size: 1.1rem
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 3D NEWSPAPER BACKGROUND LAYERS -->
+    <div class="newspaper-layer-back"></div>
+    <div class="newspaper-layer-mid"></div>
+    <div class="newspaper-layer-front"></div>
+
+    <!-- LANDING: FRONT PAGE -->
+    <div id="landing">
+        <div class="landing-content">
+            <div class="front-page">
+                <!-- MAIN FEATURE COLUMN -->
+                <div class="feature-col">
+                    <div class="page-hed-group">
+                        <div class="page-edition">LEGAL INTELLIGENCE EDITION</div>
+                        <div class="page-date">THURSDAY, MAY 8, 2025 · CLASSIFIED LEVEL 2</div>
+                    </div>
+
+                    <!-- OFFICER/COURT ENTRY -->
+                    <div class="feature-article" onclick="enterApp('officer')" role="button" tabindex="0">
+                        <div class="feature-hed">Court & Government <span style="color:var(--red-bright)">Intelligence
+                                Access</span></div>
+                        <div class="feature-subhed">Verification. Compliance. Judicial Authority.</div>
+                        <div class="feature-byline">⚖ DIVISION BENCH · CASE MANAGEMENT</div>
+                        <div class="feature-desc">
+                            Access the complete judicial intelligence network. Verify departmental compliance, track
+                            deadlines with precision, monitor contempt risk in real-time, and issue authoritative
+                            directives. This system is built for court officers who need authoritative, actionable legal
+                            intelligence. Review all active proceedings, approve certifications, and maintain the
+                            integrity of judicial processes.
+                        </div>
+                        <div class="feature-cta">Enter as Court Officer</div>
+                    </div>
+
+                    <!-- CITIZEN ENTRY -->
+                    <div class="feature-article citizen" onclick="enterApp('citizen')" role="button" tabindex="0">
+                        <div class="feature-hed">Citizen Legal <span style="color:var(--green-verified)">Access</span>
+                        </div>
+                        <div class="feature-subhed">Understand. Track. Participate.</div>
+                        <div class="feature-byline">📰 PUBLIC INFORMATION · CASE TRACKING</div>
+                        <div class="feature-desc">
+                            Understand court decisions in plain language. Track your case through every stage of the
+                            legal process. Access simplified explanations of complex rulings and see exactly when
+                            important deadlines are approaching. This is legal information designed for
+                            citizens—transparent, readable, and genuinely helpful.
+                        </div>
+                        <div class="feature-cta">Enter as Citizen</div>
+                    </div>
+                </div>
+
+                <!-- SIDEBAR: CONTENTS / INDEX -->
+                <div class="sidebar">
+                    <div class="sidebar-section">
+                        <div class="sidebar-hed">IN THIS EDITION</div>
+                        <div class="sidebar-item">Front Page News</div>
+                        <div class="sidebar-item">Editorial Intelligence</div>
+                        <div class="sidebar-item">Breaking Legal Strip</div>
+                        <div class="sidebar-item">Daily Proceedings</div>
+                        <div class="sidebar-item">Case Archives</div>
+                        <div class="sidebar-item">Legal Notices</div>
+                        <div class="sidebar-item">Court Calendar</div>
+                        <div class="sidebar-item">Public Records</div>
+                    </div>
+                    <div class="sidebar-section">
+                        <div class="sidebar-hed">TODAY'S ALERTS</div>
+                        <div class="sidebar-item" style="color:var(--red-bright);font-weight:700">⚠ Critical: PIL 2847
+                        </div>
+                        <div class="sidebar-item">→ Compliance Due 10 May</div>
+                        <div class="sidebar-item">→ Contempt Risk: HIGH</div>
+                        <div class="sidebar-item">→ 2 Days Remaining</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APP: NEWSPAPER SPREAD -->
+    <div id="app">
+        <!-- MASTHEAD -->
+        <div class="masthead">
+            <div class="masthead-inner">
+                <div>
+                    <div class="masthead-title">Nyaya<span>Lens</span></div>
+                </div>
+                <div class="masthead-meta">
+                    <span id="userRole"></span>
+                    <div class="masthead-meta-sep"></div>
+                    <span>Thursday, 8 May 2025</span>
+                    <div class="masthead-meta-sep"></div>
+                    <span id="caseIndicator"></span>
+                </div>
+                <div class="masthead-actions">
+                    <button class="btn-header" onclick="toggleNotices()">🔔 Notices</button>
+                    <button class="btn-header" onclick="switchRole()">Switch Role</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BREAKING LEGAL STRIP -->
+        <div class="breaking-banner" id="breakingBanner">
+            <div class="breaking-label">Breaking Legal Proceedings</div>
+            <div class="breaking-scroll" id="breakingScroll"></div>
+        </div>
+
+        <!-- NEWSPAPER SPREAD -->
+        <div class="newspaper-spread">
+            <!-- MAIN EDITORIAL COLUMN -->
+            <div class="editorial-column" id="editorialColumn"></div>
+
+            <!-- RIGHT SIDEBAR: NOTICES & CALENDAR -->
+            <div class="notices-column" id="noticesColumn"></div>
+        </div>
+
+        <!-- MODAL -->
+        <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+            <div class="modal" onclick="event.stopPropagation()">
+                <button class="modal-close" onclick="closeModal()">✕</button>
+                <div id="modalContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BREAKING_NEWS = [
+            "Contempt proceedings initiated against 3 municipal bodies for non-compliance with court directives.",
+            "Supreme Court issues notice to 12 states on environmental compliance — deadline 14 May 2025.",
+            "High Court approves Urban Development Ministry compliance report — Case WP-3421.",
+            "RTI response deadline expires in 2 days for Case No. PIL-2024-0931.",
+            "8 departments yet to file affidavits in matter of road infrastructure — deadline 10 May.",
+        ];
+
+        let currentRole = null;
+
+        function buildBreakingNews() {
+            const scroll = document.getElementById('breakingScroll');
+            scroll.innerHTML = BREAKING_NEWS.map(n => `<span>${n} &nbsp;•&nbsp;</span>`).join('');
+        }
+
+        function enterApp(role) {
+            currentRole = role;
+            const landing = document.getElementById('landing');
+            landing.style.animation = 'fadeOut .5s ease forwards';
+            setTimeout(() => {
+                landing.style.display = 'none';
+                document.getElementById('app').style.display = 'block';
+                buildApp(role);
+                buildBreakingNews();
+                window.scrollTo(0, 0);
+            }, 500);
+        }
+
+        function switchRole() {
+            const app = document.getElementById('app');
+            app.style.opacity = '0';
+            app.style.transition = 'opacity .3s';
+            setTimeout(() => {
+                app.style.display = 'none';
+                app.style.opacity = '1';
+                app.style.transition = '';
+                const landing = document.getElementById('landing');
+                landing.style.display = 'flex';
+                landing.style.animation = 'fadeIn .4s ease';
+                currentRole = null;
+            }, 300);
+        }
+
+        function buildApp(role) {
+            const isOfficer = role === 'officer';
+            const roleLabel = isOfficer ? 'Court Officer Access' : 'Citizen Access';
+            document.getElementById('userRole').textContent = roleLabel;
+            document.getElementById('caseIndicator').textContent = '47 Active Cases · 12 Critical';
+
+            buildEditorial(isOfficer);
+            buildSidebar(isOfficer);
+        }
+
+        function buildEditorial(isOfficer) {
+            const col = document.getElementById('editorialColumn');
+            col.innerHTML = `
+    ${isOfficer ? buildVerifyPanel() : ''}
+
+    <!-- BREAKING LEGAL STRIP -->
+    <div class="legal-bulletin fade-in stagger-1">
+      <div class="bulletin-hed">⚠ IMMEDIATE ACTION REQUIRED</div>
+      <div class="bulletin-text">PIL 2847/2024: Compliance affidavit overdue by 12 days. Contempt proceedings will be initiated if no response received by EOD 9 May 2025.</div>
+    </div>
+
+    <!-- FRONT PAGE STORY -->
+    <article class="front-page-story fade-in stagger-2">
+      <div class="story-meta">
+        <span class="meta-tag">Urban Development Ministry</span>
+        <span class="meta-tag">High Court</span>
+        <span class="risk-badge risk-critical">CRITICAL RISK</span>
+        ${isOfficer ? '<span class="meta-tag" style="background:#8B1A1A;color:white">PENDING VERIFICATION</span>' : ''}
+      </div>
+
+      <h1 class="story-hed">Ministry Directed to Complete Road Infrastructure Compliance Within 48 Hours or Face Contempt</h1>
+
+      <p class="story-subhed">The Division Bench, taking serious note of continued non-compliance with the 2023 directive on urban infrastructure, has issued a final notice invoking its contempt jurisdiction under Article 129 of the Constitution.</p>
+
+      <div class="story-body">
+        <div class="story-column">
+          The High Court has found that the Urban Development Ministry has systematically failed to comply with court-mandated infrastructure development standards set forth in PIL 2847/2024. The court's order, issued on 2 April 2025, required completion of road infrastructure work in 47 municipalities nationwide. As of today, only 8 municipalities have submitted valid compliance documentation.
+        </div>
+        <div class="story-column">
+          The court has expressed grave concern over the pattern of non-compliance and has now invoked its constitutional contempt powers. The ministry faces potential penalties including fines and possible contempt proceedings against individual officers. The court has ordered a final show-cause notice to be issued immediately.
+        </div>
+      </div>
+
+      <div class="story-data">
+        <div class="data-cell">
+          <div class="data-label">Case Number</div>
+          <div class="data-value">PIL 2847/2024</div>
+        </div>
+        <div class="data-cell">
+          <div class="data-label">Deadline</div>
+          <div class="data-value critical">10 May 2025</div>
+        </div>
+        <div class="data-cell">
+          <div class="data-label">Time Remaining</div>
+          <div class="data-value urgent">2 Days</div>
+        </div>
+        <div class="data-cell">
+          <div class="data-label">Risk Level</div>
+          <div class="data-value critical">CRITICAL</div>
+        </div>
+      </div>
+
+      ${isOfficer ? `
+      <div style="display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap">
+        <button style="background:var(--green-verified);color:white;border:none;cursor:pointer;padding:.7rem 1.5rem;font-family:var(--sans);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;transition:opacity .25s" onclick="action('Approve')">✓ Mark Compliant</button>
+        <button style="background:var(--red-bright);color:white;border:none;cursor:pointer;padding:.7rem 1.5rem;font-family:var(--sans);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;transition:opacity .25s" onclick="action('Reject')">✕ Initiate Contempt</button>
+        <button style="background:none;border:1px solid var(--newsprint-gray);cursor:pointer;padding:.7rem 1.5rem;font-family:var(--sans);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--newsprint-gray);transition:all .25s" onclick="action('Defer')">⏸ Defer Review</button>
+      </div>`: ''}
+    </article>
+
+    ${isOfficer ? `
+    <div class="editorial-intelligence fade-in stagger-3">
+      <div class="editorial-text">NyayaLens analysis indicates <strong>87% probability of continued non-compliance</strong> based on historical patterns for this ministry. Previous three deadlines were missed by average 18 days. <strong>Contempt initiation strongly recommended</strong> if no response by EOD 9 May 2025. Show-cause notice should be drafted in parallel with compliance window.</div>
+      <div class="editorial-note">System recommendation: Begin contempt proceedings framework immediately. Statutory requirement met for judicial invocation of Article 129.</div>
+    </div>
+    `: ''}
+
+    ${!isOfficer ? `
+    <div class="citizen-explainer fade-in stagger-3">
+      <div class="explainer-byline">📋 What This Means for You</div>
+      <div class="explainer-hed">Understanding the Court's Decision</div>
+      <div class="explainer-body">
+        <p>The <strong>High Court</strong> has ordered the government to complete road infrastructure projects in your area. This is a legal order—not a request. The government must act by <strong>10 May 2025</strong>.</p>
+        <p>If the government does not comply, the court has the power to hold officials in <span class="explainer-highlight">contempt of court</span>, which is a serious legal consequence. You do <strong>not need to take action yourself</strong>. The court is monitoring this matter.</p>
+      </div>
+    </div>
+    `: ''}
+
+    <!-- FILING DESK -->
+    <div class="filing-desk fade-in stagger-4" id="filingDesk" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" onclick="document.getElementById('fileInput').click()">
+      <div class="filing-content">
+        <div class="filing-icon">📄</div>
+        <div class="filing-title">Submit New Filing</div>
+        <p class="filing-sub">Upload judgment PDFs or legal documents<br>NyayaLens will extract, verify, and process</p>
+        <button class="filing-btn" type="button">Select Document</button>
+        <p class="filing-hint">PDF · Max 50MB · Encrypted · Government Security</p>
+      </div>
+      <div class="file-uploaded" id="fileUploaded">
+        <div class="file-icon">📋</div>
+        <div class="file-info">
+          <div class="file-name" id="fileName">document.pdf</div>
+          <div class="file-size" id="fileSize">2.4 MB</div>
+        </div>
+        <button class="file-analyze" onclick="analyzeFile()">Analyze →</button>
+      </div>
+      <input type="file" id="fileInput" accept=".pdf" onchange="handleFileSelect(event)">
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="proceedings-timeline fade-in stagger-5">
+      <div class="proceedings-hed">Daily Proceedings Timeline</div>
+      <div class="timeline-track">
+        <div class="timeline-step done">
+          <div class="timeline-node">✓</div>
+          <div class="timeline-label">Judgment</div>
+        </div>
+        <div class="timeline-step done">
+          <div class="timeline-node">✓</div>
+          <div class="timeline-label">Review</div>
+        </div>
+        <div class="timeline-step active">
+          <div class="timeline-node">◉</div>
+          <div class="timeline-label">Verification</div>
+        </div>
+        <div class="timeline-step">
+          <div class="timeline-node">○</div>
+          <div class="timeline-label">Action</div>
+        </div>
+        <div class="timeline-step">
+          <div class="timeline-node">○</div>
+          <div class="timeline-label">Resolution</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAST EDITIONS / ARCHIVE -->
+    <div class="past-editions fade-in stagger-5">
+      <h2 class="past-editions-hed">Archived Proceedings</h2>
+      <div class="clippings-grid">
+        ${CASES.map((c, i) => `
+        <div class="case-clipping" onclick="openCase('${c.id}')" style="animation:fadeIn .6s ease ${.5 + i * 0.1}s both">
+          <div class="clipping-dept">${c.dept}</div>
+          <div class="clipping-hed">${c.title}</div>
+          <div class="clipping-meta">
+            <div class="clipping-date">${c.date}</div>
+            <div class="clipping-status ${c.statusClass}">${c.status}</div>
+          </div>
+        </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+        }
+
+        const CASES = [
+            { id: 'PIL-2847', title: 'Urban Infrastructure Non-Compliance', dept: 'Urban Dev.', date: '02 Apr', status: 'Pending', statusClass: 'status-critical' },
+            { id: 'WP-3421', title: 'Environmental Effluent Treatment', dept: 'Environment', date: '15 Mar', status: 'Review', statusClass: 'status-review' },
+            { id: 'SM-441', title: 'School Safety Audit — 12 Districts', dept: 'Education', date: '28 Feb', status: 'Verified', statusClass: 'status-verified' },
+            { id: 'RTI-0931', title: 'Land Acquisition Records Disclosure', dept: 'Revenue', date: '10 Jan', status: 'Verified', statusClass: 'status-verified' },
+            { id: 'PIL-2901', title: 'Water Supply Contamination Notice', dept: 'Municipal', date: '20 Apr', status: 'Pending', statusClass: 'status-critical' },
+            { id: 'WP-3388', title: 'Hospital Waste Management Protocol', dept: 'Health', date: '05 Mar', status: 'Review', statusClass: 'status-review' },
+        ];
+
+        function buildVerifyPanel() {
+            return `
+    <div style="background:rgba(139,26,26,.08);border:2px solid var(--red-bright);padding:1.5rem;margin-bottom:2rem">
+      <div style="font-family:var(--sans);font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;color:var(--red-bright);font-weight:800;margin-bottom:1rem">⚖ Officer Verification Required</div>
+      <div style="font-family:var(--serif-body);font-size:.95rem;color:var(--newsprint-gray);margin-bottom:1rem">Case PIL 2847/2024 requires judicial verification and approval. Review compliance status and issue directive.</div>
+    </div>`;
+        }
+
+        function buildSidebar(isOfficer) {
+            const col = document.getElementById('noticesColumn');
+            col.innerHTML = `
+    <!-- LEGAL NOTICES -->
+    <div class="notice-section fade-in stagger-2">
+      <div class="notice-hed">⊙ Pinned Notices</div>
+
+      <div class="notice-pin critical">
+        <div class="pin-dot"></div>
+        <div>
+          <div class="pin-text"><strong>PIL 2847:</strong> Contempt proceedings imminent. Compliance affidavit overdue 12 days.</div>
+          <div class="pin-date">Today · 09:47 IST</div>
+        </div>
+      </div>
+
+      <div class="notice-pin warning">
+        <div class="pin-dot"></div>
+        <div>
+          <div class="pin-text"><strong>WP-3421:</strong> Urban Development Ministry response deadline approaching.</div>
+          <div class="pin-date">08 May · 14:30 IST</div>
+        </div>
+      </div>
+
+      <div class="notice-pin info">
+        <div class="pin-dot"></div>
+        <div>
+          <div class="pin-text"><strong>Suo Motu 441:</strong> Hearing scheduled 16 May. Consolidated report required before bench.</div>
+          <div class="pin-date">07 May · 11:00 IST</div>
+        </div>
+      </div>
+
+      <div class="notice-pin" style="border-color:var(--green-verified)">
+        <div class="pin-dot" style="background:var(--green-verified)"></div>
+        <div>
+          <div class="pin-text"><strong>RTI-0931:</strong> Compliance verified and certified. Certificate issued and archived.</div>
+          <div class="pin-date">05 May · 16:45 IST</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COURT CALENDAR -->
+    <div class="calendar-box fade-in stagger-3">
+      <div class="calendar-hed">📅 Court Calendar</div>
+
+      <div class="calendar-entry">
+        <div>
+          <div class="calendar-date">10</div>
+          <div class="calendar-month">May</div>
+        </div>
+        <div class="calendar-info">
+          <div class="calendar-title">PIL 2847 Compliance Deadline</div>
+          <div class="calendar-sub">Urban Development Ministry · Final Notice</div>
+        </div>
+      </div>
+
+      <div class="calendar-entry">
+        <div>
+          <div class="calendar-date">14</div>
+          <div class="calendar-month">May</div>
+        </div>
+        <div class="calendar-info">
+          <div class="calendar-title">PIL 2847 — Hearing Resumed</div>
+          <div class="calendar-sub">Division Bench · Room 4 · 10:30 AM</div>
+        </div>
+      </div>
+
+      <div class="calendar-entry">
+        <div>
+          <div class="calendar-date">16</div>
+          <div class="calendar-month">May</div>
+        </div>
+        <div class="calendar-info">
+          <div class="calendar-title">Suo Motu Case 441/2024</div>
+          <div class="calendar-sub">Division Bench · Consolidated Report Due</div>
+        </div>
+      </div>
+
+      <div class="calendar-entry">
+        <div>
+          <div class="calendar-date">22</div>
+          <div class="calendar-month">May</div>
+        </div>
+        <div class="calendar-info">
+          <div class="calendar-title">WP-3421 Final Verification</div>
+          <div class="calendar-sub">Road Infrastructure Complete Review</div>
+        </div>
+      </div>
+    </div>
+  `;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            document.getElementById('filingDesk').classList.add('drag');
+        }
+
+        function handleDragLeave() {
+            document.getElementById('filingDesk').classList.remove('drag');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            document.getElementById('filingDesk').classList.remove('drag');
+            const file = e.dataTransfer.files[0];
+            if (file) showFilePreview(file);
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) showFilePreview(file);
+        }
+
+        function showFilePreview(file) {
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = `${(file.size / 1024).toFixed(1)} KB · PDF`;
+            document.getElementById('fileUploaded').classList.add('show');
+        }
+
+        function analyzeFile() {
+            document.getElementById('modalContent').innerHTML = `
+    <div class="modal-hed">Analysis Complete</div>
+    <div class="modal-sub">NyayaLens AI Processing</div>
+    <div class="modal-body">
+      <p><strong style="color:var(--ink-black)">Document Type:</strong> High Court Judgment — Division Bench</p>
+      <p><strong style="color:var(--ink-black)">Case Number:</strong> PIL 2847/2024</p>
+      <p><strong style="color:var(--ink-black)">Deadline Detected:</strong> 10 May 2025</p>
+      <p><strong style="color:var(--ink-black)">Department:</strong> Urban Development Ministry</p>
+      <p><strong style="color:var(--red-bright)">Risk Level:</strong> CRITICAL</p>
+      <p><strong style="color:var(--ink-black)">Required Action:</strong> File compliance affidavit with supporting documentation</p>
+    </div>
+  `;
+            document.getElementById('modalOverlay').classList.add('open');
+        }
+
+        function openCase(id) {
+            const c = CASES.find(x => x.id === id);
+            if (!c) return;
+            document.getElementById('modalContent').innerHTML = `
+    <div class="modal-hed">${c.title}</div>
+    <div class="modal-sub">${c.dept} · Case ${c.id}</div>
+    <div class="modal-body">
+      <p><strong>Filed:</strong> ${c.date}, 2025</p>
+      <p><strong>Status:</strong> ${c.status}</p>
+      <p>Click "View Complete Case File" to access full proceedings, compliance history, and attached documents.</p>
+    </div>
+  `;
+            document.getElementById('modalOverlay').classList.add('open');
+        }
+
+        function action(type) {
+            const msgs = { Approve: 'Compliance marked APPROVED', Reject: 'Non-compliance recorded', Defer: 'Matter deferred for review' };
+            const colors = { Approve: 'var(--green-verified)', Reject: 'var(--red-bright)', Defer: 'var(--gold-primary)' };
+            document.getElementById('modalContent').innerHTML = `
+    <div style="text-align:center;padding:1.5rem 0">
+      <div style="font-family:var(--serif-display);font-size:2.5rem;font-weight:900;color:${colors[type]};margin-bottom:1rem;letter-spacing:.1em;border:3px solid ${colors[type]};display:inline-block;padding:.4rem 1.5rem;transform:rotate(-2deg)">${type.toUpperCase()}</div>
+      <div style="font-family:var(--serif-body);font-size:1rem;color:var(--newsprint-gray);margin-top:1.5rem;line-height:1.7">${msgs[type]}. Case PIL 2847/2024 has been recorded in the system.</div>
+    </div>`;
+            document.getElementById('modalOverlay').classList.add('open');
+        }
+
+        function toggleNotices() {
+            const col = document.querySelector('.notices-column');
+            col.style.display = col.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('open');
+        }
+
+        // Init breaking news
+        buildBreakingNews();
+    </script>
+</body>
+
+</html>

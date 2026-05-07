@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NyayaLens - Front Page</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Newsreader:wght@400;500;600;700&amp;family=Work+Sans:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#3c0002",
+                        "primary-container": "#0a192f",
+                        "surface": "#131314",
+                        "secondary": "#c9c6c0",
+                        "on-tertiary-fixed-variant": "#92030f",
+                        "on-primary": "#233148",
+                        "surface-dim": "#131314",
+                        "surface-container-low": "#1b1c1c",
+                        "on-secondary-container": "#b7b5af",
+                        "on-surface-variant": "#c5c6cd",
+                        "outline": "#8f9097",
+                        "error": "#ffb4ab",
+                        "error-container": "#93000a",
+                        "inverse-surface": "#e4e2e2",
+                        "outline-variant": "#44474d",
+                        "tertiary-fixed": "#ffdad6",
+                        "tertiary": "#ffb4ac",
+                        "on-primary-fixed": "#0d1c32",
+                        "surface-variant": "#343535",
+                        "on-primary-fixed-variant": "#39475f",
+                        "primary-fixed": "#d6e3ff",
+                        "secondary-fixed": "#e5e2db",
+                        "primary-fixed-dim": "#b9c7e4",
+                        "on-tertiary-fixed": "#410003",
+                        "primary": "#b9c7e4",
+                        "on-secondary-fixed-variant": "#474742",
+                        "surface-bright": "#393939",
+                        "inverse-on-surface": "#303030",
+                        "on-tertiary": "#690007",
+                        "tertiary-fixed-dim": "#ffb4ac",
+                        "on-primary-container": "#74829d",
+                        "background": "#131314",
+                        "on-surface": "#e4e2e2",
+                        "on-secondary": "#31312c",
+                        "surface-container": "#1f2020",
+                        "on-error": "#690005",
+                        "on-secondary-fixed": "#1c1c18",
+                        "surface-container-lowest": "#0e0e0e",
+                        "surface-container-high": "#2a2a2a",
+                        "secondary-fixed-dim": "#c9c6c0",
+                        "on-background": "#e4e2e2",
+                        "on-tertiary-container": "#e74943",
+                        "inverse-primary": "#515f78",
+                        "secondary-container": "#474742",
+                        "on-error-container": "#ffdad6",
+                        "surface-tint": "#b9c7e4",
+                        "surface-container-highest": "#343535"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "container-max": "1440px",
+                        "stack-sm": "12px",
+                        "unit": "8px",
+                        "stack-lg": "48px",
+                        "margin-page": "64px",
+                        "stack-md": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Newsreader"],
+                        "label-caps": ["Work Sans"],
+                        "headline-md": ["Newsreader"],
+                        "display-xl": ["Newsreader"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "500" }],
+                        "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "500" }],
+                        "display-xl": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .noise-overlay {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col relative selection:bg-primary/30">
+<header class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-margin-page py-unit bg-surface-container/90 backdrop-blur-md shadow-md">
+<div class="flex items-center gap-gutter">
+<h1 class="font-headline-lg text-headline-lg tracking-tighter font-bold text-primary-fixed">NyayaLens</h1>
+<nav class="hidden md:flex gap-stack-md ml-stack-lg">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300 font-label-caps text-label-caps" href="#">Archives</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300 font-label-caps text-label-caps" href="#">Directives</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300 font-label-caps text-label-caps" href="#">Docket</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300 font-label-caps text-label-caps" href="#">Intelligence</a>
+</nav>
+</div>
+<div class="flex items-center gap-stack-sm">
+<button class="hidden md:flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-full text-on-surface hover:bg-surface-variant/50 transition-colors font-label-caps text-label-caps">
+                Citizen Perspective
+            </button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">gavel</span>
+</button>
+</div>
+</header>
+<main class="flex-grow relative flex flex-col items-center justify-center pt-32 pb-margin-page px-gutter overflow-hidden w-full mx-auto">
+<div class="absolute inset-0 z-0">
+<div class="absolute inset-0 bg-gradient-to-b from-transparent to-background/90 z-10"></div>
+<img alt="" class="w-full h-full object-cover opacity-20 mix-blend-overlay" data-alt="A cinematic, moody digital canvas representing a high-tech legal environment. The background features a deep, dark charcoal texture that subtly resembles aged archival paper illuminated by a faint, cool blue rim light. Abstract, slightly blurred fragments of legal text float ethereally in the background, creating a sense of depth and uncovering hidden truths. The overall aesthetic is a sophisticated hybrid of tactile history and cutting-edge artificial intelligence in a dark-mode setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDB8baR2Da6Uml4ReCyTOSQ5gNxpHBhrCGk_EJYJG_uB8Gx-GHcmLT1Rh5-r5ujvgtbFW5n4fgvOD5n8zd1STojuT8wO09uks2ubRGLU_QpL2Zdh-8eyLbuVNfeSz6k7sqjl_H4cHTakXg7pkWdyDGIvnKYZpiZ02icS8CGxk8SVOBYqqWzA0L09mlYSxv5ZHEhOp2dAL9uzMJA1bIz7K50UvnKD7FY915LZkEDXMjUxBF_UoTq3QI0amra2lJqA1s6Uo2YW0M1sudm"/>
+</div>
+<div class="absolute inset-0 noise-overlay z-0"></div>
+<div class="absolute top-1/4 left-1/4 w-64 p-6 bg-surface-container/30 backdrop-blur-md border border-outline-variant/30 rounded-lg shadow-xl transform -rotate-6 z-0 hidden lg:block">
+<div class="w-12 h-1 bg-primary/40 mb-4"></div>
+<p class="font-body-md text-body-md text-on-surface-variant/60 line-clamp-3">§ 402.1a: The directive clearly stipulates the necessity for cross-departmental verification prior to establishing a permanent docket entry. Failure to comply...</p>
+</div>
+<div class="absolute bottom-1/3 right-1/4 w-72 p-6 bg-surface-container/30 backdrop-blur-md border border-outline-variant/30 rounded-lg shadow-xl transform rotate-3 z-0 hidden lg:block">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-primary text-sm">psychology</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant/60 line-clamp-2">AI Confidence Score: 94.2%. Source correlation established across three historical precedents.</p>
+</div>
+<div class="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto mb-stack-lg">
+<div class="inline-flex items-center gap-2 px-3 py-1 border border-primary/30 bg-primary/10 rounded-full mb-stack-md">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-caps text-label-caps text-primary tracking-widest uppercase">Department of Legal Intelligence</span>
+</div>
+<h2 class="font-display-xl text-display-xl text-on-surface mb-stack-md leading-tight">
+                Court Directives.<br/>
+<span class="text-primary-fixed-dim">Simplified. Verified. Actionable.</span>
+</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                Navigate the complexities of legal mandates with AI-powered clarity. An intelligent conduit bridging historical dockets with future-state civic action.
+            </p>
+</div>
+<div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-gutter w-full max-w-container-max max-w-5xl mx-auto mt-stack-md">
+<a class="group relative flex flex-col p-10 rounded-xl bg-primary-container/40 backdrop-blur-xl border border-outline-variant/50 hover:border-primary/50 transition-all duration-500 overflow-hidden shadow-xl min-h-[300px]" href="#">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-fixed/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="absolute -right-12 -top-12 w-48 h-48 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-500"></div>
+<span class="material-symbols-outlined text-display-xl text-primary-fixed mb-stack-md drop-shadow-md relative z-10 group-hover:scale-110 transition-transform duration-500" style="font-variation-settings: 'FILL' 1;">gavel</span>
+<h3 class="font-headline-lg text-headline-lg text-on-primary-fixed mb-unit relative z-10 group-hover:text-primary transition-colors">Court &amp; Government Access</h3>
+<p class="font-body-md text-body-md text-on-primary-container relative z-10 mt-auto">Secure entry for authorized personnel. Access full dockets, historical records, and AI-assisted brief generation.</p>
+<div class="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-500 text-primary">
+<span class="material-symbols-outlined">arrow_forward</span>
+</div>
+</a>
+<a class="group relative flex flex-col p-10 rounded-xl bg-surface-container-high/80 border border-outline-variant hover:border-secondary/50 transition-all duration-500 overflow-hidden shadow-lg min-h-[300px]" href="#">
+<div class="absolute inset-0 noise-overlay opacity-50 group-hover:opacity-30 transition-opacity"></div>
+<span class="material-symbols-outlined text-display-xl text-on-surface mb-stack-md relative z-10 group-hover:scale-110 transition-transform duration-500">newspaper</span>
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-unit relative z-10 group-hover:text-secondary transition-colors">Citizen Legal Access</h3>
+<p class="font-body-md text-body-md text-on-surface-variant relative z-10 mt-auto">Public portal for decoded legal updates, civil rights summaries, and actionable civic intelligence.</p>
+<div class="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-500 text-secondary">
+<span class="material-symbols-outlined">arrow_forward</span>
+</div>
+</a>
+</div>
+</main>
+<footer class="w-full py-stack-lg px-margin-page flex flex-col md:flex-row justify-between items-center gap-gutter border-t border-outline-variant bg-surface-container-lowest mt-auto relative z-10">
+<div class="font-headline-md text-headline-md text-primary">NyayaLens</div>
+<div class="text-on-surface-variant font-label-caps text-label-caps text-center">
+            © 2024 NYAYALENS • JUSTICE THROUGH CLARITY • DEPARTMENT OF LEGAL INTELLIGENCE
+        </div>
+<nav class="flex gap-stack-md flex-wrap justify-center">
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary underline decoration-primary/30 transition-all hover:opacity-80" href="#">Constitution</a>
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary underline decoration-primary/30 transition-all hover:opacity-80" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary underline decoration-primary/30 transition-all hover:opacity-80" href="#">FOIA</a>
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary underline decoration-primary/30 transition-all hover:opacity-80" href="#">Contact</a>
+</nav>
+</footer>
+</body></html>

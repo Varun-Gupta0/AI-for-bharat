@@ -61,6 +61,7 @@ app.include_router(analyze_router, prefix="/api/v1", tags=["Analyze"])
 app.include_router(verify_router,  prefix="/api/v1", tags=["Verify"])
 app.include_router(cases_router,   prefix="/api/v1", tags=["Cases"])
 app.include_router(translate_router, prefix="/api/v1", tags=["Translate"])
+app.include_router(pdf_router, prefix="/api/v1", tags=["PDF"])
 
 # ─── Static Files ─────────────────────────────────────────────────────────────
 

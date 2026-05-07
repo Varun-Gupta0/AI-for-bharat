@@ -5,11 +5,13 @@ Rule-based extraction engine that converts legal text into structured data WITHO
 """
 
 import re
+from dotenv import load_dotenv
 import os
 import logging
 import requests
 from datetime import datetime, timedelta
 
+load_dotenv(override=True)
 logger = logging.getLogger(__name__)
 
 # -------------------------

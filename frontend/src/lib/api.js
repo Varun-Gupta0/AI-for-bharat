@@ -69,3 +69,25 @@ export const fetchVerifiedCases = async () => {
 
     return response.json();
 };
+
+// ─── NEW PERSISTENCE API METHODS ───────────────────────────────────────────
+
+export const searchCases = async (query) => {
+    const response = await fetch(`${API_BASE_URL}/cases/search?q=${encodeURIComponent(query)}`);
+    if (!response.ok) throw new Error("Search failed");
+    return response.json();
+};
+
+export const fetchRecentCases = async (limit = 5) => {
+    const response = await fetch(`${API_BASE_URL}/cases/recent?limit=${limit}`);
+    if (!response.ok) throw new Error("Failed to fetch recent cases");
+    return response.json();
+};
+
+export const updateCaseStatus = async (fileId, status) => {
+    const response = await fetch(`${API_BASE_URL}/cases/${fileId}/status?status=${status}`, {
+        method: "PATCH",
+    });
+    if (!response.ok) throw new Error("Status update failed");
+    return response.json();
+};

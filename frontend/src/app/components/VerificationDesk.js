@@ -22,10 +22,11 @@ export default function VerificationDesk({
         initial={{ opacity: 0, scale: 0.97 }}
         animate={{ opacity: 1, scale: 1 }}
         style={{
-          background: "rgba(45,106,79,.06)",
-          border: "2px solid var(--green-verified)",
-          padding: "2rem",
+          background: "var(--highlight)",
+          border: `2px solid var(--status-verified)`,
+          padding: "3rem 2rem",
           textAlign: "center",
+          boxShadow: "0 20px 40px rgba(0,0,0,0.3)"
         }}
       >
         <div
@@ -33,27 +34,29 @@ export default function VerificationDesk({
             fontFamily: "var(--serif-display)",
             fontSize: "3rem",
             fontWeight: 900,
-            color: "var(--green-verified)",
-            border: "3px solid var(--green-verified)",
+            color: "var(--status-verified)",
+            border: `4px solid var(--status-verified)`,
             display: "inline-block",
-            padding: ".4rem 1.5rem",
-            transform: "rotate(-1.5deg)",
+            padding: ".5rem 2rem",
+            transform: "rotate(-2deg)",
             letterSpacing: ".1em",
-            marginBottom: "1rem",
+            marginBottom: "1.5rem",
+            textTransform: "uppercase"
           }}
         >
-          CERTIFIED
+          Certified
         </div>
         <div
           style={{
             fontFamily: "var(--serif-body)",
-            fontSize: "1.1rem",
-            color: "var(--newsprint-gray)",
-            marginBottom: "1.2rem",
+            fontSize: "1.2rem",
+            color: "var(--text-main)",
+            marginBottom: "1.5rem",
             lineHeight: 1.6,
+            fontWeight: 700
           }}
         >
-          Case verified and archived in the Judicial Record.
+          Case verified and permanently archived in the Judicial Record.
         </div>
         <div
           style={{
@@ -62,26 +65,29 @@ export default function VerificationDesk({
             justifyContent: "center",
             gap: "1rem",
             flexWrap: "wrap",
+            background: "var(--card-bg)",
+            padding: "1rem",
+            border: "1px solid var(--border-dim)"
           }}
         >
           <span
             style={{
               fontFamily: "var(--sans)",
               fontSize: ".7rem",
-              letterSpacing: ".12em",
+              letterSpacing: ".15em",
               textTransform: "uppercase",
-              color: "var(--newsprint-gray)",
-              opacity: 0.6,
+              color: "var(--text-muted)",
+              fontWeight: 800
             }}
           >
-            Tracking ID:
+            RECORD ID:
           </span>
           <span
             style={{
               fontFamily: "var(--serif-display)",
-              fontSize: "1.3rem",
+              fontSize: "1.4rem",
               fontWeight: 900,
-              color: "var(--green-verified)",
+              color: "var(--accent-gold)",
               letterSpacing: ".05em",
             }}
           >
@@ -90,19 +96,19 @@ export default function VerificationDesk({
           <button
             onClick={() => onCopyID(verificationSuccess)}
             style={{
-              background: "var(--green-verified)",
+              background: "var(--accent-gold)",
               color: "white",
               border: "none",
               cursor: "pointer",
-              padding: ".3rem .8rem",
+              padding: ".5rem 1.2rem",
               fontFamily: "var(--sans)",
-              fontSize: ".65rem",
-              letterSpacing: ".12em",
+              fontSize: ".7rem",
+              letterSpacing: ".1em",
               textTransform: "uppercase",
-              fontWeight: 700,
+              fontWeight: 900,
             }}
           >
-            {copySuccess ? "✓ Copied" : "Copy ID"}
+            {copySuccess ? "✓ COPIED" : "COPY ID"}
           </button>
         </div>
       </motion.div>
@@ -111,10 +117,12 @@ export default function VerificationDesk({
 
   return (
     <div
+      className="luxury-border paper-emboss"
       style={{
-        background: "rgba(139,26,26,.06)",
-        border: "2px solid var(--red-bright)",
-        padding: "1.5rem 2rem",
+        background: "var(--card-bg)",
+        border: `2px solid var(--court-red)`,
+        padding: "2rem 2.5rem",
+        boxShadow: "0 10px 30px rgba(0,0,0,0.2)"
       }}
     >
       <div
@@ -123,70 +131,64 @@ export default function VerificationDesk({
           fontSize: ".7rem",
           letterSpacing: ".25em",
           textTransform: "uppercase",
-          color: "var(--red-bright)",
-          fontWeight: 800,
+          color: "var(--court-red)",
+          fontWeight: 900,
           marginBottom: "1rem",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.8rem"
         }}
       >
-        ⚖ Judicial Review Desk — Officer Verification Required
+        <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>gavel</span>
+        Judicial Review Desk — OFFICER VERIFICATION REQUIRED
       </div>
       <div
         style={{
           fontFamily: "var(--serif-body)",
-          fontSize: "1rem",
-          color: "var(--newsprint-gray)",
+          fontSize: "1.05rem",
+          color: "var(--text-main)",
           lineHeight: 1.6,
-          marginBottom: "1.5rem",
+          marginBottom: "2rem",
+          opacity: 0.9
         }}
       >
-        Review the extracted directives above. Upon approval, this case will be certified
-        and archived in the system with a unique tracking ID.
+        Please review the extracted directives above. Upon certification, this case will be 
+        committed to the permanent judicial archive and assigned a public tracking identifier.
       </div>
-      <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
         <button
           onClick={onVerify}
           style={{
-            background: "var(--green-verified)",
+            background: "var(--status-verified)",
             color: "white",
             border: "none",
             cursor: "pointer",
-            padding: ".65rem 1.8rem",
+            padding: "1rem 2.5rem",
             fontFamily: "var(--sans)",
-            fontSize: ".75rem",
-            letterSpacing: ".12em",
+            fontSize: "0.8rem",
+            letterSpacing: ".15em",
             textTransform: "uppercase",
-            fontWeight: 700,
-            transition: "opacity .25s",
+            fontWeight: 800,
+            boxShadow: "0 5px 15px rgba(0,0,0,0.1)"
           }}
-          onMouseEnter={(e) => (e.target.style.opacity = ".85")}
-          onMouseLeave={(e) => (e.target.style.opacity = "1")}
         >
-          ✓ Certify & Archive Case
+          ✓ Certify & Commit to Archive
         </button>
         <button
           style={{
             background: "none",
-            border: "1px solid var(--newsprint-gray)",
+            border: "1px solid var(--border-dim)",
             cursor: "pointer",
-            padding: ".65rem 1.8rem",
+            padding: "1rem 2.5rem",
             fontFamily: "var(--sans)",
-            fontSize: ".75rem",
-            letterSpacing: ".12em",
+            fontSize: "0.8rem",
+            letterSpacing: ".15em",
             textTransform: "uppercase",
-            fontWeight: 700,
-            color: "var(--newsprint-gray)",
-            transition: "all .25s",
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.background = "var(--newsprint-gray)";
-            e.target.style.color = "var(--paper-white)";
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.background = "none";
-            e.target.style.color = "var(--newsprint-gray)";
+            fontWeight: 800,
+            color: "var(--text-main)",
           }}
         >
-          ✎ Edit Manually
+          ✎ Manual Correction
         </button>
       </div>
     </div>

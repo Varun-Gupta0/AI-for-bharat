@@ -32,6 +32,11 @@ def parse_extraction(raw: dict) -> CaseAnalysis:
                 action_type=a.get("action_type", "compliance"),
                 consequence=a.get("consequence"),
                 confidence=float(a.get("confidence", 0.8)),
+                # ── Evidence Linking fields ───────────────────────────────────
+                source_text=a.get("source_text"),
+                page=a.get("page"),
+                source_context=a.get("source_context"),
+                source_available=bool(a.get("source_available", False)),
             ))
         except Exception as e:
             logger.warning(f"Skipping malformed action item: {e} | data={a}")

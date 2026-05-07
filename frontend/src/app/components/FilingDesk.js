@@ -14,15 +14,12 @@ export default function FilingDesk({
   onFileChange,
   onProcessDocument,
 }) {
-  const isDragging =
-    typeof window !== "undefined" ? false : false; // handled via state in parent
-
   const statusLabel = {
-    idle: "Submit to Filing Desk",
-    uploading: "Uploading Document...",
-    analyzing: "AI is Extracting Data...",
-    success: "Extraction Complete",
-    error: "Retry Extraction",
+    idle: "Submit for Intelligence Processing",
+    uploading: "Uploading Case File...",
+    analyzing: "Running Judicial Extraction...",
+    success: "Intelligence Ready",
+    error: "Retry Submission",
   }[status];
 
   const isLoading = status === "uploading" || status === "analyzing";
@@ -30,11 +27,11 @@ export default function FilingDesk({
   return (
     <div
       style={{
-        padding: "3.5rem 2rem",
-        background: "linear-gradient(135deg, var(--paper-white), var(--paper-cream))",
-        border: "2px dashed var(--newsprint-gray)",
+        padding: "4rem 2rem",
+        background: "var(--card-bg)",
+        border: `2px dashed var(--border-dim)`,
         position: "relative",
-        minHeight: 280,
+        minHeight: 320,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -42,76 +39,122 @@ export default function FilingDesk({
         cursor: "pointer",
         transition: "all .35s",
         overflow: "hidden",
+        boxShadow: "inset 0 0 50px rgba(0,0,0,0.05)"
       }}
       onClick={() => !isLoading && document.getElementById("filing-input").click()}
-      onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = "var(--gold-primary)"; }}
-      onDragLeave={(e) => { e.currentTarget.style.borderColor = "var(--newsprint-gray)"; }}
+      onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = "var(--accent-gold)"; }}
+      onDragLeave={(e) => { e.currentTarget.style.borderColor = "var(--border-dim)"; }}
       onDrop={(e) => {
         e.preventDefault();
-        e.currentTarget.style.borderColor = "var(--newsprint-gray)";
+        e.currentTarget.style.borderColor = "var(--border-dim)";
         const dropped = e.dataTransfer.files[0];
         if (dropped) onFileChange({ target: { files: [dropped] } });
       }}
     >
-      {/* Watermark */}
+      <div
+        className="official-seal-bg material-symbols-outlined"
+      >
+        account_balance
+      </div>
+
+      {/* Archival Background Text */}
       <div
         style={{
           position: "absolute",
-          top: "1.5rem",
+          top: "5%",
           left: 0,
           right: 0,
           fontFamily: "var(--serif-display)",
-          fontSize: "3.5rem",
+          fontSize: "4.5rem",
           fontWeight: 900,
-          color: "rgba(0,0,0,.04)",
+          color: "var(--text-main)",
+          opacity: 0.02,
           textAlign: "center",
-          letterSpacing: ".05em",
+          letterSpacing: ".15em",
           lineHeight: .9,
           pointerEvents: "none",
           userSelect: "none",
+          textTransform: "uppercase"
         }}
       >
-        NYAYALENS FILING DESK
+        Official Filing Area
       </div>
 
       <div style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
-        <div style={{ fontSize: "3rem", marginBottom: "1rem", opacity: 0.55 }}>
-          {isLoading ? "⚙" : "📄"}
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          style={{ fontSize: "3rem", marginBottom: "1.5rem", color: "var(--accent-gold)", opacity: 0.9 }}
+        >
+          {isLoading ? (
+             <motion.span 
+               animate={{ rotate: 360 }} 
+               transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
+               className="material-symbols-outlined" 
+               style={{ fontSize: "64px" }}
+             >
+               hourglass_empty
+             </motion.span>
+          ) : (
+            <span className="material-symbols-outlined" style={{ fontSize: "64px" }}>history_edu</span>
+          )}
+        </motion.div>
 
-        <div
+        <h2
           style={{
             fontFamily: "var(--serif-display)",
-            fontSize: "1.5rem",
-            fontWeight: 700,
+            fontSize: "2.4rem",
+            fontWeight: 800,
             letterSpacing: "-.02em",
-            color: "var(--ink-black)",
-            marginBottom: ".5rem",
+            color: "var(--text-main)",
+            marginBottom: "1rem",
+            position: "relative"
           }}
         >
-          {file ? file.name : "Submit New Filing"}
-        </div>
+          {file ? (
+            <>
+              {file.name}
+              <div style={{
+                position: "absolute",
+                top: "-2rem",
+                right: "-2rem",
+                transform: "rotate(15deg)",
+                border: "3px solid var(--accent-gold)",
+                color: "var(--accent-gold)",
+                padding: "0.2rem 0.6rem",
+                fontFamily: "var(--sans)",
+                fontSize: "0.6rem",
+                fontWeight: 900,
+                textTransform: "uppercase",
+                letterSpacing: "0.1em"
+              }}>
+                Staged for Review
+              </div>
+            </>
+          ) : "Submit Official Record"}
+        </h2>
 
         <p
           style={{
             fontFamily: "var(--serif-body)",
-            fontSize: "1rem",
-            color: "var(--newsprint-gray)",
-            lineHeight: 1.6,
-            opacity: 0.7,
-            marginBottom: "1.5rem",
+            fontSize: "1.1rem",
+            color: "var(--text-muted)",
+            lineHeight: 1.8,
+            maxWidth: "480px",
+            margin: "0 auto 2.5rem auto",
+            fontStyle: "italic"
           }}
         >
           {file
-            ? `${(file.size / 1024).toFixed(1)} KB · PDF Ready for Analysis`
-            : "Upload judgment PDFs or legal documents\nNyayaLens will extract, verify, and process"}
+            ? `Source size: ${(file.size / 1024).toFixed(1)} KB. Staged for intelligent archival extraction.`
+            : "Drop court judgments or verified orders onto the desk. NyayaLens will extract actionable proceedings and index them into the judicial archive."}
         </p>
 
         <input
           id="filing-input"
           type="file"
           accept="application/pdf"
-          className="hidden-input"
           style={{ display: "none" }}
           onChange={onFileChange}
         />
@@ -124,35 +167,19 @@ export default function FilingDesk({
             }}
             disabled={isLoading}
             style={{
-              background: isLoading ? "var(--newsprint-gray)" : "var(--ink-black)",
-              color: "var(--paper-white)",
+              background: isLoading ? "var(--border-dim)" : "var(--accent-gold)",
+              color: "white",
               border: "none",
               cursor: isLoading ? "not-allowed" : "pointer",
-              padding: ".65rem 2rem",
+              padding: "1rem 2.5rem",
               fontFamily: "var(--sans)",
-              fontSize: ".75rem",
+              fontSize: "0.8rem",
               letterSpacing: ".15em",
               textTransform: "uppercase",
-              fontWeight: 700,
-              transition: "all .25s",
-              opacity: isLoading ? 0.7 : 1,
+              fontWeight: 800,
+              boxShadow: "0 10px 20px rgba(0,0,0,0.2)"
             }}
           >
-            {isLoading && (
-              <span
-                style={{
-                  display: "inline-block",
-                  width: 10,
-                  height: 10,
-                  border: "2px solid rgba(255,255,255,.5)",
-                  borderTopColor: "white",
-                  borderRadius: "50%",
-                  animation: "spin 1s linear infinite",
-                  marginRight: 8,
-                  verticalAlign: "middle",
-                }}
-              />
-            )}
             {statusLabel}
           </button>
         )}
@@ -160,56 +187,40 @@ export default function FilingDesk({
         {!file && (
           <button
             style={{
-              background: "var(--ink-black)",
-              color: "var(--paper-white)",
+              background: "var(--text-main)",
+              color: "var(--card-bg)",
               border: "none",
               cursor: "pointer",
-              padding: ".6rem 1.8rem",
+              padding: "0.8rem 2rem",
               fontFamily: "var(--sans)",
-              fontSize: ".75rem",
-              letterSpacing: ".15em",
+              fontSize: "0.75rem",
+              letterSpacing: ".1em",
               textTransform: "uppercase",
-              fontWeight: 700,
-              transition: "opacity .25s",
+              fontWeight: 800,
             }}
             onClick={(e) => {
               e.stopPropagation();
               document.getElementById("filing-input").click();
             }}
           >
-            Select Document
+            SELECT RECORD
           </button>
         )}
-
-        <p
-          style={{
-            marginTop: "1.2rem",
-            fontFamily: "var(--sans)",
-            fontSize: ".65rem",
-            letterSpacing: ".1em",
-            color: "var(--newsprint-gray)",
-            opacity: .45,
-          }}
-        >
-          PDF · Max 50MB · Encrypted · Government Security
-        </p>
 
         {status === "error" && (
           <p
             style={{
-              marginTop: ".8rem",
+              marginTop: "1.5rem",
               fontFamily: "var(--sans)",
               fontSize: ".8rem",
-              color: "var(--red-bright)",
+              color: "var(--court-red)",
               fontWeight: 600,
             }}
           >
-            ⚠ {errorMsg}
+            ⚠ ERROR: {errorMsg}
           </p>
         )}
       </div>
-
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

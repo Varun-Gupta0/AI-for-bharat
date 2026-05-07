@@ -26,7 +26,8 @@ ORDER
 try:
     result = extract_case_data(text)
     print("SUCCESS:")
-    print(result)
+    import json
+    print(json.dumps(result, indent=2, ensure_ascii=False).encode('utf-8').decode('cp437', errors='replace'))
 except Exception as e:
     print("FAILED:")
-    print(e)
+    print(str(e).encode('utf-8').decode('cp437', errors='replace'))

@@ -5,6 +5,8 @@ export const metadata = {
   description: "AI-powered legal intelligence, served in the tradition of the press.",
 };
 
+import { LanguageProvider } from "./context/LanguageContext";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -17,8 +19,17 @@ export default function RootLayout({ children }) {
         />
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
       </head>
-      <body suppressHydrationWarning>
-        {children}
+      <body suppressHydrationWarning className="newspaper-texture">
+        {/* Cinematic Background Layers */}
+        <div className="newspaper-layer-back"></div>
+        <div className="newspaper-layer-mid"></div>
+        <div className="newspaper-layer-front"></div>
+        
+        <LanguageProvider>
+          <main id="app-root" style={{ position: "relative", zIndex: 10 }}>
+            {children}
+          </main>
+        </LanguageProvider>
       </body>
     </html>
   );

@@ -1,6 +1,8 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import EditionSelector from "./EditionSelector";
+import { useLanguage } from "../context/LanguageContext";
 
 /**
  * Newspaper Masthead — replaces the old SaaS Header.
@@ -14,6 +16,7 @@ export default function Masthead({
   onSwitchRole,
   noticesOpen,
 }) {
+  const { t } = useLanguage();
   const today = new Date().toLocaleDateString("en-IN", {
     weekday: "long",
     year: "numeric",
@@ -21,20 +24,17 @@ export default function Masthead({
     day: "numeric",
   });
 
-  const roleBadge =
-    role === "judge"
-      ? { label: "Court Officer Access", cls: "bg-[var(--red-critical)] text-white" }
-      : { label: "Citizen Access", cls: "bg-[var(--gold-primary)] text-[var(--ink-black)]" };
+  const isOfficer = role === "officer";
 
   return (
     <header
       style={{
-        background: "var(--paper-white)",
-        borderBottom: "2px solid var(--newsprint-gray)",
+        background: "transparent",
+        borderBottom: "4px double var(--newsprint-gray)",
         position: "sticky",
         top: 0,
         zIndex: 101,
-        boxShadow: "0 4px 12px rgba(0,0,0,.15)",
+        padding: "1.2rem 2.5rem",
       }}
     >
       <div
@@ -46,122 +46,106 @@ export default function Masthead({
           alignItems: "baseline",
           justifyContent: "space-between",
           gap: "2rem",
-          padding: "1.1rem 2.5rem",
-          flexWrap: "wrap",
         }}
       >
-        {/* Title */}
-        <div>
+        {/* Title & Masthead Text */}
+        <div style={{ display: "flex", alignItems: "baseline", gap: "2rem" }}>
           <h1
             style={{
               fontFamily: "var(--serif-display)",
-              fontSize: "2rem",
+              fontSize: "2.2rem",
               fontWeight: 900,
               letterSpacing: "-.03em",
               textTransform: "uppercase",
-              lineHeight: 0.95,
+              lineHeight: 1,
               color: "var(--ink-black)",
+              margin: 0
             }}
           >
             Nyaya<span style={{ fontStyle: "italic", color: "var(--red-bright)" }}>Lens</span>
           </h1>
-          <p
-            style={{
-              fontFamily: "var(--sans)",
-              fontSize: ".6rem",
-              letterSpacing: ".25em",
-              textTransform: "uppercase",
-              color: "var(--newsprint-gray)",
-              opacity: 0.55,
-              marginTop: ".2rem",
-            }}
-          >
-            Living Legal Newspaper — AI Legal Intelligence
-          </p>
-        </div>
-
-        {/* Meta */}
-        <div
-          className="masthead-meta"
-          style={{
+          
+          <div style={{ 
+            display: "flex", 
+            gap: "1.5rem", 
+            alignItems: "center",
             fontFamily: "var(--sans)",
             fontSize: ".65rem",
-            letterSpacing: ".3em",
+            letterSpacing: ".35em",
             textTransform: "uppercase",
             color: "var(--newsprint-gray)",
-            display: "flex",
-            gap: "1.5rem",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <span
-            className={`px-2 py-1 text-[.6rem] font-bold tracking-widest uppercase ${roleBadge.cls}`}
-          >
-            {roleBadge.label}
-          </span>
-          <span style={{ opacity: .7 }}>{today}</span>
-          {activeCasesCount > 0 && (
-            <>
-              <span style={{ width: 1, height: 12, background: "var(--newsprint-gray)", opacity: .3, display: "inline-block" }} />
-              <span>
-                {activeCasesCount} Active{" "}
-                {criticalCount > 0 && (
-                  <span style={{ color: "var(--red-bright)", fontWeight: 800 }}>
-                    · {criticalCount} Critical
-                  </span>
-                )}
-              </span>
-            </>
-          )}
+            fontWeight: 500
+          }}>
+            <div style={{ opacity: 0.7 }}>{today}</div>
+            <div style={{ width: "1px", height: "12px", background: "var(--newsprint-gray)", opacity: .3 }} />
+            <div style={{ fontWeight: 800 }}>
+              {isOfficer ? "JUDICIAL COMMAND" : "CITIZEN ACCESS"}
+            </div>
+            {!isOfficer && (
+              <>
+                <div style={{ width: "1px", height: "12px", background: "var(--newsprint-gray)", opacity: .3 }} />
+                <EditionSelector />
+              </>
+            )}
+          </div>
         </div>
 
-        {/* Actions */}
-        <div style={{ display: "flex", gap: ".8rem", alignItems: "center" }}>
-          <button
-            onClick={onToggleNotices}
-            style={{
-              background: noticesOpen ? "var(--newsprint-gray)" : "none",
-              color: noticesOpen ? "var(--paper-white)" : "var(--newsprint-gray)",
-              border: "1px solid var(--newsprint-gray)",
-              cursor: "pointer",
-              padding: ".35rem .8rem",
-              fontFamily: "var(--sans)",
-              fontSize: ".7rem",
-              letterSpacing: ".12em",
-              textTransform: "uppercase",
-              fontWeight: 600,
-              transition: "all .25s",
-            }}
-          >
-            🔔 Notices
-          </button>
-          <button
-            onClick={onSwitchRole}
-            style={{
-              background: "none",
-              border: "1px solid var(--newsprint-gray)",
-              cursor: "pointer",
-              padding: ".35rem .8rem",
-              fontFamily: "var(--sans)",
-              fontSize: ".7rem",
-              letterSpacing: ".12em",
-              textTransform: "uppercase",
-              color: "var(--newsprint-gray)",
-              fontWeight: 600,
-              transition: "all .25s",
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = "var(--newsprint-gray)";
-              e.target.style.color = "var(--paper-white)";
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = "none";
-              e.target.style.color = "var(--newsprint-gray)";
-            }}
-          >
-            Switch Role
-          </button>
+        {/* Intelligence Meta */}
+        <div style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
+           {activeCasesCount > 0 && (
+             <div style={{ display: "flex", gap: "1.5rem" }}>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontFamily: "var(--sans)", fontSize: "0.8rem", fontWeight: 900, color: "var(--text-main)" }}>{activeCasesCount}</div>
+                  <div style={{ fontFamily: "var(--sans)", fontSize: "0.5rem", color: "var(--text-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>{t("activeCases")}</div>
+                </div>
+                {criticalCount > 0 && (
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ fontFamily: "var(--sans)", fontSize: "0.8rem", fontWeight: 900, color: "var(--court-red)" }}>{criticalCount}</div>
+                    <div style={{ fontFamily: "var(--sans)", fontSize: "0.5rem", color: "var(--court-red)", letterSpacing: "0.1em", textTransform: "uppercase" }}>{t("criticalAlerts")}</div>
+                  </div>
+                )}
+             </div>
+           )}
+
+           <div style={{ display: "flex", gap: "0.8rem" }}>
+              <button
+                onClick={onToggleNotices}
+                style={{
+                  background: noticesOpen ? "var(--text-main)" : "none",
+                  color: noticesOpen ? "var(--card-bg)" : "var(--text-main)",
+                  border: "1px solid var(--border-dim)",
+                  padding: "0.5rem 1rem",
+                  fontFamily: "var(--sans)",
+                  fontSize: "0.65rem",
+                  fontWeight: 800,
+                  textTransform: "uppercase",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem"
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>notifications</span>
+                Notices
+              </button>
+              
+              <button
+                onClick={onSwitchRole}
+                style={{
+                  background: "var(--highlight)",
+                  color: "var(--text-main)",
+                  border: "1px solid var(--border-dim)",
+                  padding: "0.5rem 1rem",
+                  fontFamily: "var(--sans)",
+                  fontSize: "0.65rem",
+                  fontWeight: 800,
+                  textTransform: "uppercase",
+                  cursor: "pointer"
+                }}
+              >
+                {t("exitDesk")}
+              </button>
+           </div>
         </div>
       </div>
     </header>

@@ -7,25 +7,25 @@
  */
 export default function ProceedingsTimeline({ selectedCase }) {
   const steps = [
-    { label: "Judgment Filed", icon: "📜", status: "done" },
-    { label: "AI Review", icon: "🤖", status: "done" },
-    { label: "Verification", icon: "⚖", status: selectedCase ? "done" : "active" },
-    { label: "Directives Issued", icon: "📋", status: selectedCase ? "active" : "pending" },
-    { label: "Resolution", icon: "✅", status: "pending" },
+    { label: "Judgment Filed", icon: "description", status: "done" },
+    { label: "AI Review", icon: "auto_awesome", status: "done" },
+    { label: "Verification", icon: "balance", status: selectedCase ? "done" : "active" },
+    { label: "Directives Issued", icon: "checklist", status: selectedCase ? "active" : "pending" },
+    { label: "Resolution", icon: "verified", status: "pending" },
   ];
 
   const colors = {
-    done: "var(--green-verified)",
-    active: "var(--gold-primary)",
-    pending: "rgba(0,0,0,.2)",
+    done: "var(--status-verified)",
+    active: "var(--accent-gold)",
+    pending: "var(--border-dim)",
   };
 
   return (
     <div
       style={{
-        padding: "2rem",
-        border: "2px solid var(--newsprint-gray)",
-        background: "var(--paper-cream)",
+        padding: "2.5rem 2rem",
+        border: "1px solid var(--border-dim)",
+        background: "var(--card-bg)",
         position: "relative",
       }}
     >
@@ -33,13 +33,14 @@ export default function ProceedingsTimeline({ selectedCase }) {
         style={{
           fontFamily: "var(--serif-display)",
           fontSize: "1.2rem",
-          fontWeight: 700,
+          fontWeight: 800,
           letterSpacing: "-.02em",
-          marginBottom: "1.5rem",
-          color: "var(--ink-black)",
+          marginBottom: "2rem",
+          color: "var(--text-main)",
+          textTransform: "uppercase"
         }}
       >
-        Daily Proceedings Timeline
+        Proceeding Lifecycle
       </div>
 
       {/* Track */}
@@ -68,16 +69,14 @@ export default function ProceedingsTimeline({ selectedCase }) {
               <div
                 style={{
                   position: "absolute",
-                  top: 20,
+                  top: 22,
                   left: "50%",
                   right: "-50%",
                   height: 2,
                   background:
                     step.status === "done"
-                      ? "var(--green-verified)"
-                      : step.status === "active"
-                      ? "var(--gold-primary)"
-                      : "rgba(0,0,0,.1)",
+                      ? "var(--status-verified)"
+                      : "var(--border-dim)",
                   zIndex: 0,
                 }}
               />
@@ -86,8 +85,8 @@ export default function ProceedingsTimeline({ selectedCase }) {
             {/* Node */}
             <div
               style={{
-                width: 40,
-                height: 40,
+                width: 44,
+                height: 44,
                 borderRadius: "50%",
                 border: `2px solid ${colors[step.status]}`,
                 display: "flex",
@@ -95,29 +94,29 @@ export default function ProceedingsTimeline({ selectedCase }) {
                 justifyContent: "center",
                 background:
                   step.status === "done"
-                    ? "var(--green-verified)"
+                    ? "var(--status-verified)"
                     : step.status === "active"
-                    ? "var(--gold-primary)"
-                    : "var(--paper-white)",
+                    ? "var(--card-bg)"
+                    : "var(--card-bg)",
                 zIndex: 1,
                 position: "relative",
-                fontFamily: "var(--sans)",
-                fontWeight: 700,
-                fontSize: ".75rem",
-                color:
-                  step.status === "done" || step.status === "active"
-                    ? step.status === "active"
-                      ? "var(--ink-black)"
-                      : "white"
-                    : "var(--newsprint-gray)",
                 transition: "all .3s",
                 boxShadow:
                   step.status === "active"
-                    ? `0 0 0 6px rgba(201,168,76,.2)`
+                    ? `0 0 0 6px var(--highlight)`
                     : "none",
               }}
             >
-              {step.status === "done" ? "✓" : step.icon}
+              <span 
+                className="material-symbols-outlined" 
+                style={{ 
+                  fontSize: "18px", 
+                  color: step.status === "done" ? "white" : colors[step.status],
+                  fontWeight: 900
+                }}
+              >
+                {step.status === "done" ? "check" : step.icon}
+              </span>
             </div>
 
             {/* Label */}
@@ -127,16 +126,11 @@ export default function ProceedingsTimeline({ selectedCase }) {
                 fontSize: ".65rem",
                 letterSpacing: ".1em",
                 textTransform: "uppercase",
-                color:
-                  step.status === "done"
-                    ? "var(--green-verified)"
-                    : step.status === "active"
-                    ? "var(--gold-primary)"
-                    : "var(--newsprint-gray)",
-                marginTop: ".8rem",
+                color: colors[step.status],
+                marginTop: "1.2rem",
                 textAlign: "center",
-                fontWeight: 600,
-                opacity: step.status === "pending" ? 0.45 : 1,
+                fontWeight: 800,
+                opacity: step.status === "pending" ? 0.4 : 1,
               }}
             >
               {step.label}

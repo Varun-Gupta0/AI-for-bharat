@@ -7,13 +7,13 @@ import { motion } from "framer-motion";
  * Renders the AI output as a newspaper editorial section.
  * Keeps: analysisResult data structure, all analysis fields.
  */
-export default function EditorialIntelligence({ analysisResult, role }) {
+export default function EditorialIntelligence({ analysisResult, role, onActionClick }) {
   if (!analysisResult) return null;
 
   const riskColor = {
-    HIGH: "var(--red-bright)",
-    MEDIUM: "var(--amber-warn)",
-    LOW: "var(--green-verified)",
+    HIGH: "var(--court-red)",
+    MEDIUM: "var(--accent-gold)",
+    LOW: "var(--status-verified)",
   };
 
   const primaryRisk = analysisResult.actions?.[0]?.risk_level || "LOW";
@@ -28,8 +28,8 @@ export default function EditorialIntelligence({ analysisResult, role }) {
       {/* EDITORIAL HEADER */}
       <div
         style={{
-          borderTop: "3px solid var(--newsprint-gray)",
-          borderBottom: "1px solid rgba(0,0,0,.1)",
+          borderTop: "3px solid var(--text-main)",
+          borderBottom: "1px solid var(--border-dim)",
           padding: "1rem 0",
           display: "flex",
           justifyContent: "space-between",
@@ -45,7 +45,7 @@ export default function EditorialIntelligence({ analysisResult, role }) {
             letterSpacing: ".25em",
             textTransform: "uppercase",
             fontWeight: 700,
-            color: "var(--newsprint-gray)",
+            color: "var(--text-muted)",
           }}
         >
           Data Extraction Review
@@ -57,9 +57,10 @@ export default function EditorialIntelligence({ analysisResult, role }) {
                 fontFamily: "var(--sans)",
                 fontSize: ".65rem",
                 padding: ".2rem .6rem",
-                background: "rgba(0,0,0,.07)",
+                background: "var(--highlight)",
                 letterSpacing: ".1em",
                 textTransform: "uppercase",
+                color: "var(--text-main)"
               }}
             >
               {analysisResult.court}
@@ -70,8 +71,7 @@ export default function EditorialIntelligence({ analysisResult, role }) {
               style={{
                 fontFamily: "var(--sans)",
                 fontSize: ".65rem",
-                color: "var(--newsprint-gray)",
-                opacity: 0.6,
+                color: "var(--text-muted)",
               }}
             >
               {analysisResult.order_date}
@@ -97,7 +97,7 @@ export default function EditorialIntelligence({ analysisResult, role }) {
       {analysisResult.urgency_message && (
         <div
           style={{
-            borderLeft: "4px solid var(--red-bright)",
+            borderLeft: "4px solid var(--court-red)",
             background: "rgba(139,26,26,.05)",
             padding: "1.2rem 1.5rem",
           }}
@@ -108,7 +108,7 @@ export default function EditorialIntelligence({ analysisResult, role }) {
               fontSize: ".7rem",
               letterSpacing: ".25em",
               textTransform: "uppercase",
-              color: "var(--red-bright)",
+              color: "var(--court-red)",
               fontWeight: 800,
               marginBottom: ".4rem",
             }}
@@ -120,7 +120,7 @@ export default function EditorialIntelligence({ analysisResult, role }) {
               fontFamily: "var(--serif-body)",
               fontSize: ".98rem",
               lineHeight: 1.6,
-              color: "var(--newsprint-gray)",
+              color: "var(--text-main)",
             }}
           >
             {analysisResult.urgency_message}
@@ -129,13 +129,16 @@ export default function EditorialIntelligence({ analysisResult, role }) {
       )}
 
       {/* FRONT PAGE STORY — Decision Summary */}
-      <article
+      <motion.article
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="luxury-border paper-emboss"
         style={{
-          border: "2px solid var(--newsprint-gray)",
-          padding: "2rem 2.2rem",
-          background: "var(--paper-white)",
+          padding: "2.5rem 2.5rem",
+          background: "var(--card-bg)",
           position: "relative",
-          boxShadow: "0 8px 24px rgba(0,0,0,.08)",
+          boxShadow: "0 15px 40px rgba(0,0,0,.08)",
         }}
       >
         {/* Top rule */}
@@ -145,21 +148,21 @@ export default function EditorialIntelligence({ analysisResult, role }) {
             top: 0,
             left: 0,
             right: 0,
-            height: 3,
+            height: 4,
             background:
-              "repeating-linear-gradient(90deg, var(--newsprint-gray) 0px, var(--newsprint-gray) 15px, transparent 15px, transparent 30px)",
+              "repeating-linear-gradient(90deg, var(--text-main) 0px, var(--text-main) 20px, transparent 20px, transparent 40px)",
           }}
         />
 
         <h2
           style={{
             fontFamily: "var(--serif-display)",
-            fontSize: "clamp(1.5rem, 4vw, 2.4rem)",
+            fontSize: "clamp(1.8rem, 4vw, 2.6rem)",
             fontWeight: 900,
             lineHeight: 1.15,
-            letterSpacing: "-.03em",
+            letterSpacing: "-.02em",
             color: "var(--ink-black)",
-            marginBottom: ".8rem",
+            marginBottom: "1rem",
             marginTop: ".5rem",
           }}
         >
@@ -170,14 +173,14 @@ export default function EditorialIntelligence({ analysisResult, role }) {
           <p
             style={{
               fontFamily: "var(--serif-body)",
-              fontSize: "1.1rem",
+              fontSize: "1.2rem",
               fontStyle: "italic",
-              color: "var(--newsprint-gray)",
-              lineHeight: 1.5,
-              marginBottom: "1.5rem",
-              paddingBottom: "1.2rem",
-              borderBottom: "1px solid rgba(0,0,0,.1)",
-              opacity: 0.85,
+              color: "var(--text-muted)",
+              lineHeight: 1.6,
+              marginBottom: "1.8rem",
+              paddingBottom: "1.5rem",
+              borderBottom: "1px solid rgba(0,0,0,.08)",
+              opacity: 0.9,
             }}
           >
             {analysisResult.recommended_action}
@@ -191,31 +194,31 @@ export default function EditorialIntelligence({ analysisResult, role }) {
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
               gap: 1,
-              background: "var(--newsprint-gray)",
+              background: "var(--border-dim)",
               marginBottom: "1.5rem",
-              border: "1px solid var(--newsprint-gray)",
+              border: "1px solid var(--border-dim)",
             }}
           >
             {analysisResult.actions.slice(0, 4).map((action, i) => (
               <div
                 key={i}
                 style={{
-                  background: "var(--paper-white)",
-                  padding: "1rem",
-                  borderRight: "1px solid var(--newsprint-gray)",
-                  borderBottom: "1px solid var(--newsprint-gray)",
+                  background: "var(--card-bg)",
+                  padding: "1.2rem",
+                  borderRight: "1px solid var(--border-dim)",
+                  borderBottom: "1px solid var(--border-dim)",
                 }}
               >
                 <div
                   style={{
                     fontFamily: "var(--sans)",
-                    fontSize: ".62rem",
-                    letterSpacing: ".18em",
+                    fontSize: ".65rem",
+                    letterSpacing: ".15em",
                     textTransform: "uppercase",
-                    color: "var(--newsprint-gray)",
-                    opacity: 0.6,
-                    marginBottom: ".3rem",
-                    fontWeight: 600,
+                    color: "var(--text-muted)",
+                    opacity: 0.7,
+                    marginBottom: ".4rem",
+                    fontWeight: 700,
                   }}
                 >
                   {action.department || "Action"}
@@ -223,14 +226,14 @@ export default function EditorialIntelligence({ analysisResult, role }) {
                 <div
                   style={{
                     fontFamily: "var(--serif-display)",
-                    fontSize: "1rem",
-                    fontWeight: 700,
+                    fontSize: "1.1rem",
+                    fontWeight: 800,
                     color:
                       action.risk_level === "HIGH"
-                        ? "var(--red-bright)"
+                        ? "var(--court-red)"
                         : action.risk_level === "MEDIUM"
-                        ? "var(--amber-warn)"
-                        : "var(--ink-black)",
+                        ? "var(--accent-gold)"
+                        : "var(--text-main)",
                     lineHeight: 1.2,
                   }}
                 >
@@ -240,9 +243,9 @@ export default function EditorialIntelligence({ analysisResult, role }) {
                   style={{
                     fontFamily: "var(--sans)",
                     fontSize: ".65rem",
-                    color: "var(--newsprint-gray)",
-                    opacity: 0.55,
-                    marginTop: ".2rem",
+                    color: "var(--text-muted)",
+                    opacity: 0.6,
+                    marginTop: ".3rem",
                   }}
                 >
                   {action.days_remaining !== null && action.days_remaining !== undefined
@@ -253,7 +256,7 @@ export default function EditorialIntelligence({ analysisResult, role }) {
             ))}
           </div>
         )}
-      </article>
+      </motion.article>
 
       {/* EDITORIAL INTELLIGENCE BOX */}
       <div
@@ -383,18 +386,44 @@ export default function EditorialIntelligence({ analysisResult, role }) {
                 >
                   {action.action}
                 </p>
-                <p
-                  style={{
-                    fontFamily: "var(--sans)",
-                    fontSize: ".68rem",
-                    color: "var(--newsprint-gray)",
-                    opacity: 0.55,
-                    textTransform: "uppercase",
-                    letterSpacing: ".08em",
-                  }}
-                >
-                  {action.action_type}
-                </p>
+                <div style={{ display: "flex", gap: ".8rem", alignItems: "center" }}>
+                  <p
+                    style={{
+                      fontFamily: "var(--sans)",
+                      fontSize: ".68rem",
+                      color: "var(--newsprint-gray)",
+                      opacity: 0.55,
+                      textTransform: "uppercase",
+                      letterSpacing: ".08em",
+                    }}
+                  >
+                    {action.action_type}
+                  </p>
+                  
+                  {action.source_available && (
+                    <button
+                      onClick={() => onActionClick?.(action)}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: ".3rem",
+                        padding: 0,
+                        color: "var(--gold-primary)",
+                        fontFamily: "var(--sans)",
+                        fontSize: ".65rem",
+                        fontWeight: 700,
+                        textTransform: "uppercase",
+                        letterSpacing: ".05em",
+                      }}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: "14px" }}>find_in_page</span>
+                      View Evidence
+                    </button>
+                  )}
+                </div>
               </div>
               <div
                 style={{

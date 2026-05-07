@@ -42,7 +42,17 @@ class ActionItem(BaseModel):
     action_type: str = "compliance"
     consequence: Optional[str] = None
     confidence: float = 0.8
-    
+
+    # ── Evidence Linking metadata ─────────────────────────────────────────────
+    # The exact sentence(s) from the PDF that produced this action
+    source_text: Optional[str] = None
+    # Page number (1-indexed) where the source text was found
+    page: Optional[int] = None
+    # One sentence before + after the source sentence for context
+    source_context: Optional[str] = None
+    # Whether source tracing succeeded for this action
+    source_available: bool = False
+
     # Processed fields (Step 4)
     days_remaining: Optional[int] = None
     risk_level: str = "UNKNOWN"
@@ -110,7 +120,10 @@ class CaseResponse(BaseModel):
     file_id: str
     tracking_id: Optional[str] = None
     summary: str
+    citizen_explanation: Optional[str] = None
     verified_actions: List[ActionItem]
+    status: str = "verified"
+    timestamp: Optional[str] = None
     order_date: Optional[str] = None
     court: Optional[str] = None
-    citizen_explanation: Optional[str] = None
+    risk_level: Optional[str] = "LOW"

@@ -1,21 +1,66 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import VoiceExplainer from "./VoiceExplainer";
+import { useLanguage } from "../context/LanguageContext";
+import JudicialStatusStamp from "./JudicialStatusStamp";
 
 /**
  * CaseDetail — replaces old case detail panels.
  * Maps to "Front Page Story" editorial section.
  * Keeps: selectedCase data, verified_actions, summary, citizen_explanation.
  */
-export default function CaseDetail({ selectedCase, role, onBack, onGenerateReport }) {
+export default function CaseDetail({ selectedCase, role, onBack, onGenerateReport, onActionClick }) {
+  const { lang, t } = useLanguage();
+  const [translatedExplanation, setTranslatedExplanation] = useState(selectedCase?.citizen_explanation || "");
+  const [isTranslating, setIsTranslating] = useState(false);
+
+  useEffect(() => {
+    if (!selectedCase?.citizen_explanation) return;
+    
+    // If language is English, just use the original
+    if (lang === "en") {
+      setTranslatedExplanation(selectedCase.citizen_explanation);
+      return;
+    }
+
+    const fetchTranslation = async () => {
+      setIsTranslating(true);
+      try {
+        const response = await fetch("http://localhost:8000/api/v1/translate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: selectedCase.citizen_explanation,
+            target_language: lang
+          })
+        });
+        const data = await response.json();
+        if (data.translated_text) {
+          setTranslatedExplanation(data.translated_text);
+        }
+      } catch (err) {
+        console.error("Translation error:", err);
+        setTranslatedExplanation(selectedCase.citizen_explanation);
+      } finally {
+        setIsTranslating(false);
+      }
+    };
+
+    fetchTranslation();
+  }, [lang, selectedCase]);
+
   if (!selectedCase) return null;
 
   const primaryAction = selectedCase.verified_actions?.[0] || {};
   const risk = primaryAction.risk_level || "LOW";
+  const isOfficer = role === "officer";
+
   const riskColor = {
-    HIGH: "var(--red-bright)",
-    MEDIUM: "var(--amber-warn)",
-    LOW: "var(--green-verified)",
+    HIGH: "var(--court-red)",
+    MEDIUM: "var(--accent-gold)",
+    LOW: "var(--status-verified)",
   }[risk];
 
   return (
@@ -31,18 +76,18 @@ export default function CaseDetail({ selectedCase, role, onBack, onGenerateRepor
           onClick={onBack}
           style={{
             background: "none",
-            border: "1px solid var(--newsprint-gray)",
+            border: "1px solid var(--border-dim)",
             cursor: "pointer",
-            padding: ".3rem .8rem",
+            padding: ".4rem 1rem",
             fontFamily: "var(--sans)",
             fontSize: ".7rem",
             letterSpacing: ".12em",
             textTransform: "uppercase",
-            fontWeight: 600,
-            color: "var(--newsprint-gray)",
+            fontWeight: 800,
+            color: "var(--text-main)",
           }}
         >
-          ← Back to Archive
+          ← Return to Records
         </button>
         {selectedCase.tracking_id && (
           <span
@@ -51,11 +96,11 @@ export default function CaseDetail({ selectedCase, role, onBack, onGenerateRepor
               fontSize: ".7rem",
               letterSpacing: ".15em",
               textTransform: "uppercase",
-              color: "var(--newsprint-gray)",
-              opacity: 0.55,
+              color: "var(--text-muted)",
+              opacity: 0.8,
             }}
           >
-            {selectedCase.tracking_id}
+            REF: {selectedCase.tracking_id}
           </span>
         )}
       </div>
@@ -63,11 +108,11 @@ export default function CaseDetail({ selectedCase, role, onBack, onGenerateRepor
       {/* FRONT PAGE STORY */}
       <article
         style={{
-          border: "2px solid var(--newsprint-gray)",
-          padding: "2rem 2.2rem",
-          background: "var(--paper-white)",
+          border: `2px solid var(--text-main)`,
+          padding: "2.5rem",
+          background: "var(--card-bg)",
           position: "relative",
-          boxShadow: "0 8px 24px rgba(0,0,0,.08)",
+          boxShadow: isOfficer ? "0 20px 40px rgba(0,0,0,0.4)" : "0 8px 24px rgba(0,0,0,0.05)",
         }}
       >
         <div
@@ -78,7 +123,7 @@ export default function CaseDetail({ selectedCase, role, onBack, onGenerateRepor
             right: 0,
             height: 3,
             background:
-              "repeating-linear-gradient(90deg, var(--newsprint-gray) 0px, var(--newsprint-gray) 15px, transparent 15px, transparent 30px)",
+              `repeating-linear-gradient(90deg, var(--text-main) 0px, var(--text-main) 15px, transparent 15px, transparent 30px)`,
           }}
         />
 
@@ -89,34 +134,59 @@ export default function CaseDetail({ selectedCase, role, onBack, onGenerateRepor
             fontSize: ".62rem",
             letterSpacing: ".18em",
             textTransform: "uppercase",
-            color: "var(--newsprint-gray)",
-            marginBottom: "1rem",
-            marginTop: ".5rem",
+            color: "var(--text-muted)",
+            marginBottom: "1.5rem",
             display: "flex",
-            gap: ".8rem",
+            gap: "1.2rem",
             alignItems: "center",
             flexWrap: "wrap",
           }}
         >
           {primaryAction.department && (
-            <span style={{ padding: ".2rem .6rem", background: "rgba(0,0,0,.07)", fontWeight: 600 }}>
+            <span style={{ padding: ".2rem .6rem", background: "var(--highlight)", fontWeight: 700, color: "var(--text-main)" }}>
               {primaryAction.department}
             </span>
           )}
           <span
             style={{
-              border: `1px solid ${riskColor}`,
+              border: `1.5px solid ${riskColor}`,
               color: riskColor,
               padding: ".2rem .5rem",
-              fontWeight: 700,
+              fontWeight: 800,
               fontSize: ".6rem",
             }}
           >
-            {risk} RISK
+            {risk} RISK LEVEL
           </span>
-          <span style={{ opacity: 0.45 }}>
-            {primaryAction.deadline || "Deadline TBD"}
+          <span style={{ opacity: 0.8 }}>
+             DATED: {selectedCase.timestamp ? new Date(selectedCase.timestamp).toLocaleDateString() : "PENDING"}
           </span>
+          {selectedCase.status === "verified" && (
+            <motion.div
+              initial={{ scale: 1.5, opacity: 0, rotate: -30 }}
+              animate={{ scale: 1, opacity: 1, rotate: -15 }}
+              style={{
+                position: "absolute",
+                top: "1rem",
+                right: "1rem",
+                border: "4px solid var(--status-verified)",
+                color: "var(--status-verified)",
+                padding: "0.5rem 1.5rem",
+                fontFamily: "var(--serif-display)",
+                fontSize: "1.5rem",
+                fontWeight: 900,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                background: "rgba(255,255,255,0.8)",
+                boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+                zIndex: 10,
+                pointerEvents: "none",
+                opacity: 0.8
+              }}
+            >
+              Certified Extract
+            </motion.div>
+          )}
         </div>
 
         {/* Headline */}
@@ -126,9 +196,9 @@ export default function CaseDetail({ selectedCase, role, onBack, onGenerateRepor
             fontSize: "clamp(1.8rem, 5vw, 3rem)",
             fontWeight: 900,
             lineHeight: 1.1,
-            letterSpacing: "-.03em",
-            color: "var(--ink-black)",
-            marginBottom: ".8rem",
+            letterSpacing: "-.04em",
+            color: "var(--text-main)",
+            marginBottom: "1rem",
           }}
         >
           {selectedCase.summary}
@@ -141,15 +211,14 @@ export default function CaseDetail({ selectedCase, role, onBack, onGenerateRepor
               fontFamily: "var(--serif-body)",
               fontSize: "1.2rem",
               fontStyle: "italic",
-              color: "var(--newsprint-gray)",
+              color: "var(--text-muted)",
               lineHeight: 1.5,
-              marginBottom: "1.5rem",
-              paddingBottom: "1.2rem",
-              borderBottom: "1px solid rgba(0,0,0,.1)",
-              opacity: 0.85,
+              marginBottom: "2rem",
+              paddingBottom: "1.5rem",
+              borderBottom: "1px solid var(--border-dim)",
             }}
           >
-            {primaryAction.action}
+            Directive: {primaryAction.action}
           </p>
         )}
 
@@ -157,30 +226,28 @@ export default function CaseDetail({ selectedCase, role, onBack, onGenerateRepor
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
             gap: 1,
-            background: "var(--newsprint-gray)",
-            border: "1px solid var(--newsprint-gray)",
-            marginBottom: "1.8rem",
+            background: "var(--border-dim)",
+            border: "1px solid var(--border-dim)",
+            marginBottom: "2.5rem",
           }}
         >
           {[
             { label: "Tracking ID", value: selectedCase.tracking_id || "—", color: null },
             { label: "Deadline", value: primaryAction.deadline || "TBD", color: riskColor },
             {
-              label: "Days Remaining",
-              value: primaryAction.days_remaining != null ? `${primaryAction.days_remaining}` : "—",
-              color: primaryAction.days_remaining <= 3 ? "var(--red-bright)" : null,
+              label: "Action Window",
+              value: primaryAction.days_remaining != null ? `${primaryAction.days_remaining} Days` : "—",
+              color: primaryAction.days_remaining <= 3 ? "var(--court-red)" : null,
             },
-            { label: "Risk Level", value: risk, color: riskColor },
+            { label: "Proceeding Status", component: <JudicialStatusStamp status={selectedCase.status} /> },
           ].map((cell, i) => (
             <div
               key={i}
               style={{
-                background: "var(--paper-white)",
-                padding: "1rem",
-                borderRight: "1px solid var(--newsprint-gray)",
-                borderBottom: "1px solid var(--newsprint-gray)",
+                background: "var(--card-bg)",
+                padding: "1.2rem",
               }}
             >
               <div
@@ -189,37 +256,40 @@ export default function CaseDetail({ selectedCase, role, onBack, onGenerateRepor
                   fontSize: ".62rem",
                   letterSpacing: ".18em",
                   textTransform: "uppercase",
-                  color: "var(--newsprint-gray)",
-                  opacity: 0.55,
-                  marginBottom: ".3rem",
-                  fontWeight: 600,
+                  color: "var(--text-muted)",
+                  marginBottom: ".4rem",
+                  fontWeight: 800,
                 }}
               >
                 {cell.label}
               </div>
-              <div
-                style={{
-                  fontFamily: "var(--serif-display)",
-                  fontSize: "1.2rem",
-                  fontWeight: 700,
-                  color: cell.color || "var(--ink-black)",
-                  lineHeight: 1,
-                }}
-              >
-                {cell.value}
-              </div>
+              {cell.component ? (
+                <div style={{ marginTop: "0.2rem" }}>{cell.component}</div>
+              ) : (
+                <div
+                  style={{
+                    fontFamily: "var(--serif-display)",
+                    fontSize: "1.1rem",
+                    fontWeight: 800,
+                    color: cell.color || "var(--text-main)",
+                    lineHeight: 1,
+                  }}
+                >
+                  {cell.value}
+                </div>
+              )}
             </div>
           ))}
         </div>
 
         {/* Body columns */}
-        {role !== "citizen" && selectedCase.verified_actions?.length > 0 && (
+        {isOfficer && selectedCase.verified_actions?.length > 0 && (
           <div
             style={{
               display: "grid",
               gridTemplateColumns: "1fr 1fr",
-              gap: "2rem",
-              marginBottom: "1.8rem",
+              gap: "3rem",
+              marginBottom: "2.5rem",
             }}
             className="story-grid"
           >
@@ -230,231 +300,196 @@ export default function CaseDetail({ selectedCase, role, onBack, onGenerateRepor
                   fontSize: ".65rem",
                   letterSpacing: ".2em",
                   textTransform: "uppercase",
-                  fontWeight: 700,
-                  marginBottom: "1rem",
-                  color: "var(--newsprint-gray)",
-                  borderBottom: "1px solid rgba(0,0,0,.1)",
+                  fontWeight: 800,
+                  marginBottom: "1.5rem",
+                  color: "var(--text-muted)",
+                  borderBottom: "1px solid var(--border-dim)",
                   paddingBottom: ".5rem",
                 }}
               >
-                Required Directives
+                Archived Directives
               </div>
               {selectedCase.verified_actions.map((action, i) => (
                 <div
                   key={i}
                   style={{
-                    paddingBottom: ".8rem",
-                    marginBottom: ".8rem",
-                    borderBottom: i < selectedCase.verified_actions.length - 1 ? "1px dashed rgba(0,0,0,.1)" : "none",
+                    paddingBottom: "1.2rem",
+                    marginBottom: "1.2rem",
+                    borderBottom: i < selectedCase.verified_actions.length - 1 ? "1px dashed var(--border-dim)" : "none",
                   }}
                 >
-                  <p
-                    style={{
-                      fontFamily: "var(--serif-body)",
-                      fontSize: ".95rem",
-                      fontWeight: 600,
-                      color: "var(--ink-black)",
-                      marginBottom: ".2rem",
-                    }}
-                  >
-                    {action.action}
-                  </p>
-                  <p
-                    style={{
-                      fontFamily: "var(--sans)",
-                      fontSize: ".7rem",
-                      color: "var(--newsprint-gray)",
-                      opacity: 0.55,
-                    }}
-                  >
-                    {action.department} · {action.deadline || "No deadline"}
-                  </p>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1.5rem" }}>
+                    <div>
+                      <p
+                        style={{
+                          fontFamily: "var(--serif-body)",
+                          fontSize: "1rem",
+                          fontWeight: 700,
+                          color: "var(--text-main)",
+                          marginBottom: ".3rem",
+                        }}
+                      >
+                        {action.action}
+                      </p>
+                      <p
+                        style={{
+                          fontFamily: "var(--sans)",
+                          fontSize: ".7rem",
+                          color: "var(--text-muted)",
+                        }}
+                      >
+                        {action.department} · {action.deadline || "Permanent Record"}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
 
-            <div>
+            <div style={{ borderLeft: "1px solid var(--border-dim)", paddingLeft: "3rem" }}>
               <div
                 style={{
                   fontFamily: "var(--sans)",
                   fontSize: ".65rem",
                   letterSpacing: ".2em",
                   textTransform: "uppercase",
-                  fontWeight: 700,
-                  marginBottom: "1rem",
-                  color: "var(--newsprint-gray)",
-                  borderBottom: "1px solid rgba(0,0,0,.1)",
+                  fontWeight: 800,
+                  marginBottom: "1.5rem",
+                  color: "var(--text-muted)",
+                  borderBottom: "1px solid var(--border-dim)",
                   paddingBottom: ".5rem",
                 }}
               >
-                Compliance Status
-              </div>
-              <div
-                style={{
-                  fontFamily: "var(--serif-body)",
-                  fontSize: "3rem",
-                  fontWeight: 900,
-                  color: "var(--green-verified)",
-                  lineHeight: 1,
-                  marginBottom: ".5rem",
-                }}
-              >
-                100%
+                Judicial Summary
               </div>
               <p
                 style={{
                   fontFamily: "var(--serif-body)",
-                  fontSize: ".95rem",
-                  color: "var(--newsprint-gray)",
-                  lineHeight: 1.6,
-                  opacity: 0.75,
+                  fontSize: "1rem",
+                  color: "var(--text-main)",
+                  lineHeight: 1.8,
+                  opacity: 0.9,
                 }}
               >
-                All extracted directives have been human-verified and assigned to departments.
+                {selectedCase.summary}
               </p>
             </div>
           </div>
         )}
 
         {/* CITIZEN VIEW — Public Understanding */}
-        {role === "citizen" && (
+        {!isOfficer && (
           <div
             style={{
-              background: "rgba(45,106,79,.06)",
-              borderLeft: "4px solid var(--green-verified)",
-              padding: "1.8rem",
-              marginTop: ".5rem",
+              background: "var(--highlight)",
+              borderLeft: "4px solid var(--status-verified)",
+              padding: "2rem",
+              marginTop: "1rem",
             }}
           >
             <div
               style={{
                 fontFamily: "var(--sans)",
-                fontSize: ".65rem",
+                fontSize: ".7rem",
                 letterSpacing: ".15em",
                 textTransform: "uppercase",
-                color: "var(--green-verified)",
-                fontWeight: 700,
-                marginBottom: ".8rem",
+                color: "var(--status-verified)",
+                fontWeight: 900,
+                marginBottom: "1rem",
               }}
             >
-              📰 What This Means for You — Public Understanding
+              {t("publicAwarenessNotice")}
             </div>
             <h3
               style={{
                 fontFamily: "var(--serif-display)",
-                fontSize: "1.4rem",
-                fontWeight: 700,
-                color: "var(--ink-black)",
+                fontSize: "1.6rem",
+                fontWeight: 800,
+                color: "var(--text-main)",
                 marginBottom: "1rem",
               }}
             >
-              Understanding the Court's Decision
+              {t("understandingProceeding")}
             </h3>
             <div
               style={{
                 fontFamily: "var(--serif-body)",
-                fontSize: "1rem",
-                color: "var(--newsprint-gray)",
+                fontSize: "1.1rem",
+                color: "var(--text-main)",
                 lineHeight: 1.8,
+                opacity: 0.9
               }}
             >
-              {selectedCase.citizen_explanation ? (
-                <p>{selectedCase.citizen_explanation}</p>
+              {translatedExplanation ? (
+                <p>{translatedExplanation}</p>
               ) : (
-                <>
-                  <p style={{ marginBottom: ".7rem" }}>
-                    The court has issued a legal directive requiring government departments to take
-                    specific actions. This is a binding order—not a request.
-                  </p>
-                  <p>
-                    You are not required to take any action yourself. The court is monitoring this
-                    matter and has assigned compliance responsibilities to the relevant departments.
-                  </p>
-                </>
+                <p>
+                  {isTranslating ? "Translating..." : "This record documents a judicial proceeding involving departmental compliance. The court has established binding directives that are currently being monitored for transparency and public accountability."}
+                </p>
               )}
             </div>
-
-            {/* Deadline cards */}
-            {selectedCase.verified_actions?.length > 0 && (
-              <div style={{ marginTop: "1.5rem", display: "flex", flexDirection: "column", gap: ".8rem" }}>
-                {selectedCase.verified_actions.map((action, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: ".8rem 1rem",
-                      background: "rgba(45,106,79,.08)",
-                      borderLeft: "3px solid var(--green-verified)",
-                      flexWrap: "wrap",
-                      gap: ".5rem",
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontFamily: "var(--serif-body)",
-                        fontSize: ".9rem",
-                        fontWeight: 600,
-                        color: "var(--ink-black)",
-                      }}
-                    >
-                      {action.action}
-                    </p>
-                    <div style={{ textAlign: "right" }}>
-                      <p
-                        style={{
-                          fontFamily: "var(--sans)",
-                          fontSize: ".8rem",
-                          fontWeight: 700,
-                          color: "var(--newsprint-gray)",
-                        }}
-                      >
-                        {action.deadline || "No Deadline"}
-                      </p>
-                      {action.days_remaining != null && (
-                        <p
-                          style={{
-                            fontFamily: "var(--sans)",
-                            fontSize: ".65rem",
-                            color: "var(--newsprint-gray)",
-                            opacity: 0.5,
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          {action.days_remaining} days left
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            
+            {translatedExplanation && <VoiceExplainer text={translatedExplanation} />}
           </div>
         )}
 
         {/* Generate Report */}
-        <div style={{ marginTop: "1.5rem" }}>
-          <button
-            onClick={onGenerateReport}
-            style={{
-              background: "var(--ink-black)",
-              color: "var(--paper-white)",
-              border: "none",
-              cursor: "pointer",
-              padding: ".65rem 1.8rem",
-              fontFamily: "var(--sans)",
-              fontSize: ".75rem",
-              letterSpacing: ".15em",
-              textTransform: "uppercase",
-              fontWeight: 700,
-              transition: "opacity .25s",
-            }}
-            onMouseEnter={(e) => (e.target.style.opacity = ".8")}
-            onMouseLeave={(e) => (e.target.style.opacity = "1")}
-          >
-            📄 Generate Official Report
-          </button>
+        <div style={{ marginTop: "2.5rem", borderTop: "1px solid var(--border-dim)", paddingTop: "2rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+           <p style={{ fontFamily: "var(--sans)", fontSize: "0.6rem", color: "var(--text-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+             Archived on {selectedCase.timestamp ? new Date(selectedCase.timestamp).toLocaleString() : "Date Unknown"}
+           </p>
+           <button
+             onClick={() => {
+               // Cinematic Export Logic
+               const printWindow = window.open('', '_blank');
+               // We fetch the generateReport function dynamically or import it at the top
+               // But since we are here, we can just trigger a nice print preview.
+               // We will import it at the top of CaseDetail.
+               import('../../lib/reportGenerator').then(({ generateReport }) => {
+                 const report = generateReport(selectedCase, role);
+                 printWindow.document.write(`
+                   <html>
+                     <head>
+                       <title>Official Record - ${selectedCase.tracking_id}</title>
+                       <style>
+                         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+                         body { margin: 0; padding: 20px; background: #e5e7eb; display: flex; justify-content: center; }
+                         @media print {
+                           body { background: white; padding: 0; }
+                           .no-print { display: none; }
+                         }
+                       </style>
+                     </head>
+                     <body>
+                       <div class="no-print" style="position: fixed; top: 20px; right: 20px;">
+                         <button onclick="window.print()" style="background: #1a1a1a; color: white; border: none; padding: 10px 20px; font-family: Inter, sans-serif; cursor: pointer; border-radius: 4px;">PRINT OFFICIAL RECORD</button>
+                       </div>
+                       ${report.html}
+                     </body>
+                   </html>
+                 `);
+                 printWindow.document.close();
+               });
+             }}
+             style={{
+               background: "var(--text-main)",
+               color: "var(--card-bg)",
+               border: "none",
+               cursor: "pointer",
+               padding: "0.8rem 2rem",
+               fontFamily: "var(--sans)",
+               fontSize: "0.7rem",
+               letterSpacing: ".15em",
+               textTransform: "uppercase",
+               fontWeight: 900,
+               transition: "all .25s",
+               boxShadow: "0 4px 10px rgba(0,0,0,0.15)"
+             }}
+             onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
+             onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
+           >
+             Generate Official Report
+           </button>
         </div>
       </article>
     </motion.div>

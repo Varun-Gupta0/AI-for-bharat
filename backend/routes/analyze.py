@@ -18,6 +18,7 @@ from services.ocr_service import extract_text_from_pdf
 from services.ai_service import extract_case_data
 from services.parser_service import parse_extraction
 from services.risk_service import process_case_analysis
+from services.evidence_service import attach_evidence
 from models.schema import AnalyzeResponse
 from database.db import save_raw_case
 
@@ -82,7 +83,8 @@ def analyze_judgment(body: AnalyzeRequest):
 
     text = extraction["text"]
     extraction_source = extraction["source"]
-    logger.info(f"[Analyze] Text extracted via {extraction_source} — {extraction['char_count']} chars")
+    pages = extraction.get("pages", [])   # per-page data for evidence linking
+    logger.info(f"[Analyze] Text extracted via {extraction_source} — {extraction['char_count']} chars, {len(pages)} pages")
 
     if not text or len(text.strip()) < 50:
         raise HTTPException(
@@ -100,6 +102,13 @@ def analyze_judgment(body: AnalyzeRequest):
         raise HTTPException(status_code=422, detail=str(e))
     except RuntimeError as e:
         raise HTTPException(status_code=502, detail=f"AI extraction failed: {e}")
+
+    # ── 3b. Evidence Linking — attach source provenance to every action ─────────
+    try:
+        raw_ai_data["actions"] = attach_evidence(raw_ai_data.get("actions", []), pages)
+        logger.info(f"[Analyze] Evidence linking complete for {len(raw_ai_data['actions'])} actions")
+    except Exception as e:
+        logger.warning(f"[Analyze] Evidence linking failed (non-fatal): {e}")
 
     # ── 4. Parse into validated model ──────────────────────────────────────────
     try:

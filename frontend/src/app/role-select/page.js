@@ -15,480 +15,188 @@ export default function RoleSelect() {
 
   const handleRoleSelection = (role) => {
     localStorage.setItem("role", role);
-    if (role === "judge") {
-      router.push("/");
-    } else {
-      router.push("/citizen");
-    }
+    // Add data attribute to body immediately for CSS vars
+    document.body.setAttribute('data-role', role);
+    router.push("/");
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "transparent",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "2rem",
-        position: "relative",
-        overflow: "hidden",
-        zIndex: 6,
-      }}
-    >
-      {/* 3D newspaper layer backgrounds */}
-      <div
-        style={{
-          position: "fixed",
-          inset: 0,
-          pointerEvents: "none",
-          zIndex: 1,
-        }}
-      >
-        {/* Back page */}
-        <div
-          style={{
-            position: "absolute",
-            top: 60,
-            left: "50%",
-            transform: "translateX(-50%) perspective(1200px) rotateY(3deg) rotateX(2deg)",
-            width: "90%",
-            maxWidth: 1300,
-            height: "calc(100vh - 120px)",
-            background: "var(--paper-cream)",
-            boxShadow: "0 30px 60px rgba(0,0,0,.4)",
-            borderRadius: "0 8px 8px 0",
+    <div style={{ 
+      minHeight: "100vh", 
+      background: "transparent", 
+      display: "flex", 
+      alignItems: "center", 
+      justifyContent: "center",
+      overflow: "hidden",
+      position: "relative",
+      zIndex: 20
+    }}>
+      <div className="newspaper-split-container" style={{ 
+        width: "95vw", 
+        maxWidth: "1400px", 
+        height: "85vh", 
+        display: "grid", 
+        gridTemplateColumns: "1fr 1fr", 
+        gap: "4px",
+        background: "var(--newsprint-gray)",
+        border: "12px solid #1a1a1a",
+        boxShadow: "0 50px 100px rgba(0,0,0,0.8)",
+        position: "relative"
+      }}>
+        
+        {/* CENTER DIVIDER LABEL */}
+        <div style={{ 
+          position: "absolute", 
+          top: "50%", 
+          left: "50%", 
+          transform: "translate(-50%, -50%) rotate(-90deg)", 
+          zIndex: 10,
+          background: "#1a1a1a",
+          padding: "1rem 2rem",
+          color: "white",
+          fontFamily: "var(--sans)",
+          fontSize: "0.7rem",
+          fontWeight: 900,
+          letterSpacing: "0.5em",
+          textTransform: "uppercase"
+        }}>
+          NYAYALENS SELECTION
+        </div>
+
+        {/* LEFT SIDE: JUDGE / OFFICER (Dark Judicial Command) */}
+        <motion.div 
+          whileHover={{ flex: 1.2 }}
+          transition={{ type: "spring", stiffness: 100, damping: 20 }}
+          onClick={() => handleRoleSelection("officer")}
+          style={{ 
+            background: "#0d1117", 
+            cursor: "pointer", 
+            padding: "4rem", 
+            display: "flex", 
+            flexDirection: "column", 
+            justifyContent: "center",
+            position: "relative",
+            overflow: "hidden",
+            borderRight: "1px solid rgba(255,255,255,0.1)"
           }}
-        />
-        {/* Middle page */}
-        <div
-          style={{
-            position: "absolute",
-            top: 55,
-            left: "50%",
-            transform: "translateX(-50%) perspective(1200px) rotateY(-2deg) rotateX(1deg)",
-            width: "90%",
-            maxWidth: 1300,
-            height: "calc(100vh - 110px)",
-            background: "var(--paper-dark)",
-            boxShadow: "0 25px 50px rgba(0,0,0,.35)",
-            borderRadius: "0 6px 6px 0",
+        >
+          {/* Background Archive Texture */}
+          <div style={{ 
+            position: "absolute", 
+            inset: 0, 
+            opacity: 0.05, 
+            backgroundImage: "url('https://www.transparenttextures.com/patterns/natural-paper.png')",
+            pointerEvents: "none"
+          }} />
+
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+            <div style={{ fontFamily: "var(--sans)", fontSize: "0.7rem", color: "#c6a306", fontWeight: 900, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>
+              Judicial Ops
+            </div>
+            <h1 style={{ fontFamily: "var(--serif-display)", fontSize: "4rem", fontWeight: 900, color: "white", lineHeight: 1, marginBottom: "2rem" }}>
+              Court Intelligence <br/>Desk
+            </h1>
+            <p style={{ fontFamily: "var(--serif-body)", fontSize: "1.2rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.6, maxWidth: "450px" }}>
+              Official portal for Judges and Government Officers. Verification, Compliance Tracking, and Judicial Authority Desk.
+            </p>
+            
+            <div style={{ marginTop: "3rem", display: "flex", gap: "2rem" }}>
+               <div style={{ borderLeft: "2px solid #8b0000", paddingLeft: "1rem" }}>
+                  <div style={{ color: "white", fontWeight: 800, fontSize: "1.2rem" }}>COMPLIANCE</div>
+                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.7rem" }}>URGENCY TRACKING</div>
+               </div>
+               <div style={{ borderLeft: "2px solid #c6a306", paddingLeft: "1rem" }}>
+                  <div style={{ color: "white", fontWeight: 800, fontSize: "1.2rem" }}>VERIFIED</div>
+                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.7rem" }}>ARCHIVAL RECORDS</div>
+               </div>
+            </div>
+
+            <div style={{ 
+              marginTop: "4rem", 
+              padding: "1rem 2rem", 
+              border: "1px solid white", 
+              display: "inline-block", 
+              color: "white",
+              fontFamily: "var(--sans)",
+              fontSize: "0.8rem",
+              fontWeight: 800,
+              letterSpacing: "0.1em"
+            }}>
+              AUTHORIZE ACCESS →
+            </div>
+          </motion.div>
+        </motion.div>
+
+        {/* RIGHT SIDE: CITIZEN (Warm Newspaper) */}
+        <motion.div 
+          whileHover={{ flex: 1.2 }}
+          transition={{ type: "spring", stiffness: 100, damping: 20 }}
+          onClick={() => handleRoleSelection("citizen")}
+          style={{ 
+            background: "#fdfcf8", 
+            cursor: "pointer", 
+            padding: "4rem", 
+            display: "flex", 
+            flexDirection: "column", 
+            justifyContent: "center",
+            position: "relative"
           }}
-        />
-        {/* Front page */}
-        <div
-          style={{
-            position: "absolute",
-            top: 50,
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "90%",
-            maxWidth: 1300,
-            height: "calc(100vh - 100px)",
-            background: "var(--paper-white)",
-            boxShadow: "0 20px 80px rgba(0,0,0,.5), -8px 0 20px rgba(0,0,0,.3)",
-            borderRadius: "0 10px 10px 0",
-            borderLeft: "1px solid rgba(0,0,0,.08)",
-          }}
-        />
+        >
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+             <div style={{ fontFamily: "var(--sans)", fontSize: "0.7rem", color: "#2c5282", fontWeight: 900, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1rem" }}>
+              Public Access
+            </div>
+            <h1 style={{ fontFamily: "var(--serif-display)", fontSize: "4rem", fontWeight: 900, color: "#1a1a1a", lineHeight: 1, marginBottom: "2rem" }}>
+              Citizen Legal <br/>Access
+            </h1>
+            <p style={{ fontFamily: "var(--serif-body)", fontSize: "1.2rem", color: "#4a4a4a", lineHeight: 1.6, maxWidth: "450px" }}>
+              Simple explanations for the public. Understand what is happening in your case without the legal jargon.
+            </p>
+
+            <div style={{ marginTop: "3rem", display: "flex", gap: "2rem" }}>
+               <div style={{ borderLeft: "2px solid #2c5282", paddingLeft: "1rem" }}>
+                  <div style={{ color: "#1a1a1a", fontWeight: 800, fontSize: "1.2rem" }}>CLARITY</div>
+                  <div style={{ color: "#718096", fontSize: "0.7rem" }}>PLAIN LANGUAGE</div>
+               </div>
+               <div style={{ borderLeft: "2px solid #b45309", paddingLeft: "1rem" }}>
+                  <div style={{ color: "#1a1a1a", fontWeight: 800, fontSize: "1.2rem" }}>TRUST</div>
+                  <div style={{ color: "#718096", fontSize: "0.7rem" }}>TRANSPARENCY</div>
+               </div>
+            </div>
+
+            <div style={{ 
+              marginTop: "4rem", 
+              padding: "1rem 2rem", 
+              background: "#2c5282", 
+              display: "inline-block", 
+              color: "white",
+              fontFamily: "var(--sans)",
+              fontSize: "0.8rem",
+              fontWeight: 800,
+              letterSpacing: "0.1em",
+              borderRadius: "4px"
+            }}>
+              VIEW MY CASE →
+            </div>
+          </motion.div>
+        </motion.div>
+
       </div>
 
-      {/* Main content */}
-      <motion.div
-        className="unfold-anim"
-        style={{
-          maxWidth: 1200,
-          width: "100%",
-          position: "relative",
-          zIndex: 6,
-        }}
-      >
-        {/* Newspaper front page */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "2fr 1fr",
-            gap: "2.5rem",
-            padding: "3rem 2.5rem",
-            border: "1px solid var(--newsprint-gray)",
-            background: "var(--paper-white)",
-            position: "relative",
-            boxShadow: "0 10px 40px rgba(0,0,0,.1)",
-          }}
-          className="front-grid"
-        >
-          {/* Top rule decoration */}
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              height: 6,
-              background:
-                "repeating-linear-gradient(90deg, var(--newsprint-gray) 0px, var(--newsprint-gray) 20px, transparent 20px, transparent 40px)",
-            }}
-          />
-
-          {/* FEATURE COLUMN */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-            {/* Masthead */}
-            <div style={{ borderBottom: "2px solid var(--newsprint-gray)", paddingBottom: "1rem" }}>
-              <div
-                style={{
-                  fontFamily: "var(--sans)",
-                  fontSize: ".68rem",
-                  letterSpacing: ".28em",
-                  textTransform: "uppercase",
-                  color: "var(--newsprint-gray)",
-                  marginBottom: ".4rem",
-                  fontWeight: 600,
-                }}
-              >
-                Legal Intelligence Edition
-              </div>
-              <h1
-                style={{
-                  fontFamily: "var(--serif-display)",
-                  fontSize: "clamp(2rem, 6vw, 3.8rem)",
-                  fontWeight: 900,
-                  letterSpacing: "-.04em",
-                  textTransform: "uppercase",
-                  lineHeight: 0.92,
-                  color: "var(--ink-black)",
-                  marginBottom: ".3rem",
-                }}
-              >
-                Nyaya<span style={{ fontStyle: "italic", color: "var(--red-bright)" }}>Lens</span>
-              </h1>
-              <div
-                style={{
-                  fontFamily: "var(--sans)",
-                  fontSize: ".7rem",
-                  letterSpacing: ".08em",
-                  color: "var(--newsprint-gray)",
-                  opacity: 0.55,
-                }}
-              >
-                {today} · Legal Intelligence System · AI-Powered
-              </div>
-            </div>
-
-            {/* OFFICER ARTICLE */}
-            <motion.div
-              role="button"
-              tabIndex={0}
-              onClick={() => handleRoleSelection("judge")}
-              onKeyDown={(e) => e.key === "Enter" && handleRoleSelection("judge")}
-              style={{
-                cursor: "pointer",
-                padding: "1.5rem 0",
-                borderBottom: "1px solid rgba(0,0,0,.08)",
-                position: "relative",
-                transition: "all .35s cubic-bezier(.25,.46,.45,.94)",
-              }}
-              whileHover={{ x: 8 }}
-            >
-              <div
-                style={{
-                  fontFamily: "var(--serif-display)",
-                  fontSize: "clamp(1.4rem, 4vw, 2.4rem)",
-                  fontWeight: 700,
-                  lineHeight: 1.15,
-                  letterSpacing: "-.02em",
-                  color: "var(--ink-black)",
-                  marginBottom: ".5rem",
-                  transition: "color .3s",
-                }}
-              >
-                Court & Government{" "}
-                <span style={{ color: "var(--red-bright)" }}>Intelligence Access</span>
-              </div>
-              <div
-                style={{
-                  fontFamily: "var(--serif-body)",
-                  fontSize: "1.1rem",
-                  fontStyle: "italic",
-                  color: "var(--newsprint-gray)",
-                  marginBottom: ".8rem",
-                  opacity: 0.85,
-                  lineHeight: 1.5,
-                }}
-              >
-                Verification. Compliance. Judicial Authority.
-              </div>
-              <div
-                style={{
-                  fontFamily: "var(--sans)",
-                  fontSize: ".68rem",
-                  letterSpacing: ".12em",
-                  textTransform: "uppercase",
-                  color: "var(--newsprint-gray)",
-                  opacity: 0.45,
-                  marginBottom: ".8rem",
-                }}
-              >
-                ⚖ Division Bench · Case Management
-              </div>
-              <div
-                style={{
-                  fontFamily: "var(--serif-body)",
-                  fontSize: ".95rem",
-                  color: "var(--newsprint-gray)",
-                  lineHeight: 1.7,
-                  marginBottom: "1rem",
-                  columns: 2,
-                  columnGap: "1.5rem",
-                }}
-              >
-                Access the complete judicial intelligence network. Verify departmental compliance,
-                track deadlines with precision, monitor contempt risk in real-time, and issue
-                authoritative directives. Upload judgments and let the 3-layer AI pipeline extract
-                actionable intelligence. Review all active proceedings and maintain judicial integrity.
-              </div>
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: ".5rem",
-                  fontFamily: "var(--sans)",
-                  fontSize: ".75rem",
-                  letterSpacing: ".12em",
-                  textTransform: "uppercase",
-                  color: "var(--ink-black)",
-                  fontWeight: 700,
-                }}
-              >
-                Enter as Court Officer →
-              </div>
-            </motion.div>
-
-            {/* CITIZEN ARTICLE */}
-            <motion.div
-              role="button"
-              tabIndex={0}
-              onClick={() => handleRoleSelection("citizen")}
-              onKeyDown={(e) => e.key === "Enter" && handleRoleSelection("citizen")}
-              style={{
-                cursor: "pointer",
-                padding: "1.5rem 0",
-                position: "relative",
-                transition: "all .35s cubic-bezier(.25,.46,.45,.94)",
-              }}
-              whileHover={{ x: 8 }}
-            >
-              <div
-                style={{
-                  fontFamily: "var(--serif-display)",
-                  fontSize: "clamp(1.4rem, 4vw, 2.4rem)",
-                  fontWeight: 700,
-                  lineHeight: 1.15,
-                  letterSpacing: "-.02em",
-                  color: "var(--green-verified)",
-                  marginBottom: ".5rem",
-                }}
-              >
-                Citizen Legal{" "}
-                <span style={{ color: "var(--green-verified)" }}>Access</span>
-              </div>
-              <div
-                style={{
-                  fontFamily: "var(--serif-body)",
-                  fontSize: "1.1rem",
-                  fontStyle: "italic",
-                  color: "var(--newsprint-gray)",
-                  marginBottom: ".8rem",
-                  opacity: 0.85,
-                  lineHeight: 1.5,
-                }}
-              >
-                Understand. Track. Participate.
-              </div>
-              <div
-                style={{
-                  fontFamily: "var(--sans)",
-                  fontSize: ".68rem",
-                  letterSpacing: ".12em",
-                  textTransform: "uppercase",
-                  color: "var(--newsprint-gray)",
-                  opacity: 0.45,
-                  marginBottom: ".8rem",
-                }}
-              >
-                📰 Public Information · Case Tracking
-              </div>
-              <div
-                style={{
-                  fontFamily: "var(--serif-body)",
-                  fontSize: ".95rem",
-                  color: "var(--newsprint-gray)",
-                  lineHeight: 1.7,
-                  marginBottom: "1rem",
-                  columns: 2,
-                  columnGap: "1.5rem",
-                }}
-              >
-                Understand court decisions in plain language. Track your case through every stage of
-                the legal process. Access simplified explanations of complex rulings and see exactly
-                when important deadlines are approaching. Legal information designed for
-                citizens—transparent, readable, and genuinely helpful.
-              </div>
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: ".5rem",
-                  fontFamily: "var(--sans)",
-                  fontSize: ".75rem",
-                  letterSpacing: ".12em",
-                  textTransform: "uppercase",
-                  color: "var(--green-verified)",
-                  fontWeight: 700,
-                }}
-              >
-                Enter as Citizen →
-              </div>
-            </motion.div>
-          </div>
-
-          {/* SIDEBAR */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "2rem", paddingBottom: "2rem" }}>
-            <div
-              style={{
-                border: "1px solid rgba(0,0,0,.15)",
-                padding: "1.2rem",
-                background: "rgba(0,0,0,.02)",
-              }}
-            >
-              <div
-                style={{
-                  fontFamily: "var(--serif-display)",
-                  fontSize: "1rem",
-                  fontWeight: 700,
-                  letterSpacing: "-.02em",
-                  marginBottom: ".8rem",
-                  paddingBottom: ".6rem",
-                  borderBottom: "2px solid var(--newsprint-gray)",
-                  color: "var(--ink-black)",
-                }}
-              >
-                In This Edition
-              </div>
-              {[
-                "Editorial Intelligence",
-                "Breaking Legal Strip",
-                "Daily Proceedings",
-                "Filing Desk",
-                "Case Archives",
-                "Legal Notices",
-                "Court Calendar",
-                "Public Records",
-              ].map((item) => (
-                <div
-                  key={item}
-                  style={{
-                    fontFamily: "var(--sans)",
-                    fontSize: ".72rem",
-                    letterSpacing: ".08em",
-                    textTransform: "uppercase",
-                    color: "var(--newsprint-gray)",
-                    padding: ".4rem 0",
-                    borderBottom: "1px dotted rgba(0,0,0,.1)",
-                    cursor: "default",
-                  }}
-                >
-                  {item}
-                </div>
-              ))}
-            </div>
-
-            <div
-              style={{
-                border: "1px solid rgba(0,0,0,.15)",
-                padding: "1.2rem",
-                background: "rgba(139,26,26,.03)",
-              }}
-            >
-              <div
-                style={{
-                  fontFamily: "var(--serif-display)",
-                  fontSize: "1rem",
-                  fontWeight: 700,
-                  letterSpacing: "-.02em",
-                  marginBottom: ".8rem",
-                  paddingBottom: ".6rem",
-                  borderBottom: "2px solid var(--red-bright)",
-                  color: "var(--red-bright)",
-                }}
-              >
-                Today's Alerts
-              </div>
-              {[
-                { text: "⚠ Critical: PIL 2847", red: true },
-                { text: "→ Compliance Due 10 May" },
-                { text: "→ Contempt Risk: HIGH" },
-                { text: "→ 2 Days Remaining" },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  style={{
-                    fontFamily: "var(--sans)",
-                    fontSize: ".72rem",
-                    letterSpacing: ".08em",
-                    textTransform: "uppercase",
-                    color: item.red ? "var(--red-bright)" : "var(--newsprint-gray)",
-                    fontWeight: item.red ? 700 : 400,
-                    padding: ".4rem 0",
-                    borderBottom: "1px dotted rgba(0,0,0,.1)",
-                  }}
-                >
-                  {item.text}
-                </div>
-              ))}
-            </div>
-
-            {/* AI System badge */}
-            <div
-              style={{
-                border: "2px dashed var(--gold-primary)",
-                padding: "1rem",
-                background: "rgba(201,168,76,.06)",
-                position: "relative",
-              }}
-            >
-              <div
-                style={{
-                  position: "absolute",
-                  top: -1,
-                  left: "1rem",
-                  fontFamily: "var(--sans)",
-                  fontSize: ".58rem",
-                  letterSpacing: ".25em",
-                  background: "var(--paper-white)",
-                  color: "var(--gold-primary)",
-                  padding: ".15rem .4rem",
-                  fontWeight: 800,
-                  textTransform: "uppercase",
-                }}
-              >
-                AI System
-              </div>
-              <p
-                style={{
-                  fontFamily: "var(--serif-body)",
-                  fontSize: ".85rem",
-                  color: "var(--newsprint-gray)",
-                  lineHeight: 1.6,
-                  marginTop: ".5rem",
-                  fontStyle: "italic",
-                }}
-              >
-                3-Layer Intelligence: Regex Patterns → Local Ollama → OpenRouter Cloud AI
-              </p>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+      {/* MASTHEAD FLOATING */}
+      <div style={{ position: "fixed", top: "2rem", left: "50%", transform: "translateX(-50%)", zIndex: 20 }}>
+          <h2 style={{ 
+            fontFamily: "var(--serif-display)", 
+            fontSize: "1.2rem", 
+            fontWeight: 900, 
+            color: "white", 
+            background: "#8b0000",
+            padding: "0.5rem 1.5rem",
+            letterSpacing: "0.2em"
+          }}>
+            NYAYALENS
+          </h2>
+      </div>
     </div>
   );
 }

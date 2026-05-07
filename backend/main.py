@@ -9,6 +9,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 import os
+import logging
+
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Load environment variables (MUST BE BEFORE ROUTER IMPORTS)
 load_dotenv()
@@ -18,6 +23,10 @@ from routes.extract import router as extract_router
 from routes.analyze import router as analyze_router
 from routes.verify import router as verify_router
 from routes.cases import router as cases_router
+from routes.pdf import router as pdf_router
+from routes.translate import router as translate_router
+
+from database.db import init_db
 
 # ─── App Setup ────────────────────────────────────────────────────────────────
 
@@ -28,6 +37,11 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+
+@app.on_event("startup")
+def startup_event():
+    init_db()
+    logger.info("NyayaLens Judicial Archive is online and persistent.")
 
 # ─── CORS ─────────────────────────────────────────────────────────────────────
 
@@ -46,6 +60,7 @@ app.include_router(extract_router, prefix="/api/v1", tags=["Extract"])
 app.include_router(analyze_router, prefix="/api/v1", tags=["Analyze"])
 app.include_router(verify_router,  prefix="/api/v1", tags=["Verify"])
 app.include_router(cases_router,   prefix="/api/v1", tags=["Cases"])
+app.include_router(translate_router, prefix="/api/v1", tags=["Translate"])
 
 # ─── Static Files ─────────────────────────────────────────────────────────────
 

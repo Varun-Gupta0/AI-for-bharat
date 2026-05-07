@@ -81,96 +81,142 @@ Contact the legal aid cell at 1800-NYAYA-LENS.
     }
   };
 
-  // --- 2. HTML VERSION ---
+  // --- 2. HTML VERSION (GOVERNMENT-GRADE EXPORT) ---
   const generateHTML = () => {
     if (role === "judge") {
       return `
-<div style="font-family: 'Inter', sans-serif; color: #1a1c1e; max-width: 800px; margin: auto; padding: 40px; background: white;">
-  <div style="border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
-    <div>
-      <h1 style="margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: -0.02em;">NyayaLens</h1>
-      <p style="margin: 5px 0 0; font-size: 10px; font-weight: bold; opacity: 0.6; text-transform: uppercase;">Legal Intelligence System</p>
-    </div>
-    <div style="text-align: right; font-size: 10px; font-weight: bold; text-transform: uppercase;">
-      <p style="margin: 0;">Case ID: ${file_id}</p>
-      <p style="margin: 0;">Generated: ${timestamp}</p>
-    </div>
+<div style="font-family: 'Lora', Georgia, serif; color: #1a1a1a; max-width: 850px; margin: 0 auto; padding: 60px 50px; background: #ffffff; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15); position: relative; overflow: hidden; border: 1px solid #e2e8f0;">
+  
+  <!-- Subtle Background Seal -->
+  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.03; font-size: 400px; z-index: 0; pointer-events: none; filter: blur(2px);">
+    ⚖️
   </div>
 
-  <section style="margin-bottom: 30px;">
-    <h3 style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 15px;">Case Details</h3>
-    <p style="font-size: 14px; margin: 5px 0;"><strong>Court:</strong> ${court}</p>
-    <p style="font-size: 14px; margin: 5px 0;"><strong>Order Date:</strong> ${order_date}</p>
-  </section>
+  <div style="position: relative; z-index: 1;">
+    <!-- Official Header -->
+    <div style="border-bottom: 3px double #1a1a1a; padding-bottom: 30px; margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end;">
+      <div>
+        <h1 style="margin: 0; font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; letter-spacing: 0.02em; color: #0d1117;">NYAYALENS</h1>
+        <p style="margin: 8px 0 0; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #4a4a4a;">Official Judicial Intelligence Record</p>
+      </div>
+      <div style="text-align: right; font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #4a4a4a;">
+        <p style="margin: 0 0 4px;">REF NO: <strong>${file_id.substring(0, 12)}</strong></p>
+        <p style="margin: 0 0 4px;">DATE: <strong>${new Date().toLocaleDateString('en-GB')}</strong></p>
+        <p style="margin: 0;">STATUS: <span style="color: #238636; font-weight: 900;">VERIFIED</span></p>
+      </div>
+    </div>
 
-  <section style="margin-bottom: 30px;">
-    <h3 style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 15px;">Decision Summary</h3>
-    <p style="font-size: 16px; line-height: 1.6; font-style: italic; color: #333;">"${decision_summary || summary}"</p>
-  </section>
+    <!-- Case Information -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; font-family: 'Inter', sans-serif; font-size: 12px; border: 1px solid #e2e8f0; padding: 20px; background: #fafafa;">
+      <div>
+        <p style="margin: 0 0 8px; color: #666; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em; font-weight: 700;">Jurisdiction / Court</p>
+        <p style="margin: 0; font-weight: 700; color: #1a1a1a; font-size: 14px;">${court}</p>
+      </div>
+      <div>
+        <p style="margin: 0 0 8px; color: #666; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em; font-weight: 700;">Date of Order</p>
+        <p style="margin: 0; font-weight: 700; color: #1a1a1a; font-size: 14px;">${order_date}</p>
+      </div>
+    </div>
 
-  <section style="margin-bottom: 30px; background: #fef2f2; padding: 20px; border-radius: 8px; border-left: 4px solid #ef4444;">
-    <h3 style="font-size: 11px; text-transform: uppercase; color: #991b1b; margin: 0 0 10px;">Urgency & Risk Analysis</h3>
-    <p style="font-size: 14px; margin: 0 0 10px;">${urgency_message || "Immediate action required for compliance."}</p>
-    <p style="font-size: 12px; margin: 0;"><strong>Risk Level:</strong> ${riskLevel} | <strong>Deadline:</strong> ${mainDeadline}</p>
-  </section>
+    <!-- Decision Summary (Headline) -->
+    <section style="margin-bottom: 40px;">
+      <h3 style="font-family: 'Inter', sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: #666; border-bottom: 1px solid #eaeaea; padding-bottom: 8px; margin-bottom: 20px; font-weight: 800;">I. Executive Judicial Summary</h3>
+      <p style="font-family: 'Playfair Display', serif; font-size: 22px; line-height: 1.5; font-weight: 700; color: #1a1a1a; margin: 0;">
+        ${decision_summary || summary}
+      </p>
+    </section>
 
-  <section style="margin-bottom: 30px;">
-    <h3 style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 15px;">Actionable Directives</h3>
-    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-      <thead>
-        <tr style="text-align: left; background: #f8fafc;">
-          <th style="padding: 10px; border: 1px solid #e2e8f0;">Action Item</th>
-          <th style="padding: 10px; border: 1px solid #e2e8f0;">Department</th>
-          <th style="padding: 10px; border: 1px solid #e2e8f0;">Deadline</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${verified_actions.map(a => `
-          <tr>
-            <td style="padding: 10px; border: 1px solid #e2e8f0;">${a.action}</td>
-            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold;">${a.department}</td>
-            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold;">${a.deadline}</td>
+    <!-- Risk & Deadline Section -->
+    <section style="margin-bottom: 40px; border: 1px solid #8b0000; padding: 25px; background: #fffcfc; position: relative;">
+      <div style="position: absolute; top: -10px; left: 20px; background: #fffcfc; padding: 0 10px; font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 900; color: #8b0000; letter-spacing: 0.2em; text-transform: uppercase;">
+        Statutory Compliance Warning
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="flex: 1; padding-right: 20px;">
+          <p style="font-size: 16px; margin: 0; color: #8b0000; font-weight: 600; font-style: italic;">${urgency_message || "Immediate administrative action required to prevent contempt of court."}</p>
+        </div>
+        <div style="text-align: right; border-left: 1px solid rgba(139,0,0,0.2); padding-left: 20px;">
+          <p style="font-family: 'Inter', sans-serif; font-size: 10px; margin: 0 0 5px; color: #666; text-transform: uppercase; letter-spacing: 0.1em;">Assessed Risk</p>
+          <p style="font-family: 'Inter', sans-serif; font-size: 18px; margin: 0 0 10px; font-weight: 900; color: #8b0000;">${riskLevel}</p>
+          <p style="font-family: 'Inter', sans-serif; font-size: 10px; margin: 0 0 5px; color: #666; text-transform: uppercase; letter-spacing: 0.1em;">Primary Deadline</p>
+          <p style="font-family: 'Inter', sans-serif; font-size: 14px; margin: 0; font-weight: 800; color: #1a1a1a;">${mainDeadline}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Action Breakdown Table -->
+    <section style="margin-bottom: 50px;">
+      <h3 style="font-family: 'Inter', sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: #666; border-bottom: 1px solid #eaeaea; padding-bottom: 8px; margin-bottom: 20px; font-weight: 800;">II. Verified Actionable Directives</h3>
+      <table style="width: 100%; border-collapse: collapse; font-family: 'Inter', sans-serif; font-size: 13px;">
+        <thead>
+          <tr style="background: #f4f4f5; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em; color: #666;">
+            <th style="padding: 15px; border: 1px solid #d4d4d8; text-align: left; width: 50%;">Directive</th>
+            <th style="padding: 15px; border: 1px solid #d4d4d8; text-align: left;">Responsible Dept.</th>
+            <th style="padding: 15px; border: 1px solid #d4d4d8; text-align: left;">Deadline</th>
+            <th style="padding: 15px; border: 1px solid #d4d4d8; text-align: center;">Status</th>
           </tr>
-        `).join('')}
-      </tbody>
-    </table>
-  </section>
+        </thead>
+        <tbody>
+          ${verified_actions.map(a => `
+            <tr>
+              <td style="padding: 15px; border: 1px solid #d4d4d8; font-family: 'Lora', serif; font-size: 14px; color: #1a1a1a; line-height: 1.5;">${a.action}</td>
+              <td style="padding: 15px; border: 1px solid #d4d4d8; font-weight: 600; color: #3f3f46;">${a.department}</td>
+              <td style="padding: 15px; border: 1px solid #d4d4d8; font-weight: 700; color: #8b0000;">${a.deadline}</td>
+              <td style="padding: 15px; border: 1px solid #d4d4d8; text-align: center; color: #238636; font-weight: 800; font-size: 11px;">PENDING</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </section>
 
-  <footer style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #eee; font-size: 10px; color: #999; display: flex; justify-content: space-between;">
-    <div>
-      <p>Verified By: ${verified_by}</p>
-      <p>Verified At: ${verified_at}</p>
+    <!-- Verification Section -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 60px; padding-top: 30px; border-top: 1px solid #1a1a1a;">
+      <div>
+        <p style="font-family: 'Inter', sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin: 0 0 10px;">Digitally Verified By</p>
+        <p style="font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin: 0 0 5px; color: #1a1a1a; font-style: italic;">${verified_by}</p>
+        <p style="font-family: 'Inter', sans-serif; font-size: 11px; margin: 0; color: #666;">${verified_at}</p>
+      </div>
+      
+      <!-- Official Stamp -->
+      <div style="border: 3px solid #b91c1c; color: #b91c1c; padding: 10px 20px; font-family: 'Inter', sans-serif; font-weight: 900; font-size: 18px; letter-spacing: 0.1em; transform: rotate(-5deg); text-transform: uppercase; border-radius: 4px; display: inline-block;">
+        CERTIFIED TRUE EXTRACT
+      </div>
     </div>
-    <div style="text-align: right;">
-      <p>© 2026 NyayaLens Protocol</p>
-      <p>Official Record Copy</p>
-    </div>
-  </footer>
+
+  </div>
 </div>
       `.trim();
     } else {
       return `
-<div style="font-family: 'Inter', sans-serif; color: #1a1c1e; max-width: 600px; margin: auto; padding: 40px; background: white; border: 1px solid #e2e8f0; border-radius: 12px;">
-  <h1 style="font-size: 24px; color: #2563eb; margin-bottom: 10px;">Your Case Update</h1>
-  <p style="font-size: 12px; color: #64748b; margin-bottom: 30px;">ID: ${file_id.substring(0, 8)} | Date: ${order_date}</p>
-
-  <div style="background: #eff6ff; padding: 25px; border-radius: 12px; margin-bottom: 30px;">
-    <h2 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #1e40af; margin-bottom: 10px;">What this means for you</h2>
-    <p style="font-size: 16px; line-height: 1.6; color: #1e3a8a;">${citizen_explanation || summary}</p>
+<div style="font-family: 'Lora', Georgia, serif; color: #1a1a1a; max-width: 650px; margin: 0 auto; padding: 50px 40px; background: #ffffff; border: 1px solid #e2e8f0; border-top: 6px solid #2c5282; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+  <div style="text-align: center; margin-bottom: 40px;">
+    <h1 style="font-family: 'Playfair Display', serif; font-size: 28px; color: #2c5282; margin: 0 0 10px; font-weight: 900;">Public Awareness Notice</h1>
+    <p style="font-family: 'Inter', sans-serif; font-size: 11px; color: #64748b; margin: 0; letter-spacing: 0.1em; text-transform: uppercase;">REF: ${file_id.substring(0, 10)} | DATE: ${order_date}</p>
   </div>
 
-  <h2 style="font-size: 14px; text-transform: uppercase; color: #64748b; margin-bottom: 15px;">Important Next Steps</h2>
-  <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px;">
+  <div style="background: #f8fafc; padding: 30px; border-radius: 8px; margin-bottom: 35px; border-left: 4px solid #2c5282;">
+    <h2 style="font-family: 'Inter', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 0.15em; color: #1e40af; margin: 0 0 15px; font-weight: 800;">Understanding This Proceeding</h2>
+    <p style="font-size: 18px; line-height: 1.7; color: #1a1a1a; margin: 0; font-style: italic;">"${citizen_explanation || summary}"</p>
+  </div>
+
+  <h2 style="font-family: 'Inter', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b; margin: 0 0 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">Important Required Actions</h2>
+  <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 40px;">
     ${verified_actions.map(a => `
-      <div style="display: flex; justify-content: space-between; padding: 15px; background: #f8fafc; border-radius: 8px;">
-        <span style="font-size: 14px; font-weight: 500;">${a.action}</span>
-        <span style="font-size: 12px; font-weight: bold; color: #ef4444;">${a.deadline}</span>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+        <span style="font-size: 15px; font-weight: 600; color: #334155; line-height: 1.5; padding-right: 20px;">${a.action}</span>
+        <div style="text-align: right; min-width: 100px;">
+          <span style="display: block; font-family: 'Inter', sans-serif; font-size: 10px; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px;">Deadline</span>
+          <span style="font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 800; color: #ef4444;">${a.deadline}</span>
+        </div>
       </div>
     `).join('')}
   </div>
 
-  <div style="border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 12px; color: #64748b;">
-    <p><strong>Need Help?</strong> If you don't understand these steps, call 1800-NYAYA-LENS for free assistance.</p>
+  <div style="border-top: 1px dashed #cbd5e1; padding-top: 25px; text-align: center;">
+    <p style="font-family: 'Inter', sans-serif; font-size: 12px; color: #64748b; margin: 0; line-height: 1.6;">
+      <strong>Need assistance?</strong><br>
+      Contact the state legal aid cell at <span style="color: #2c5282; font-weight: 800;">1800-NYAYA-LENS</span> for free guidance.
+    </p>
   </div>
 </div>
       `.trim();

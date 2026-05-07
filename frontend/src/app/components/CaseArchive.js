@@ -1,191 +1,180 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { useLanguage } from "../context/LanguageContext";
+import JudicialStatusStamp from "./JudicialStatusStamp";
 
 /**
- * CaseArchive — replaces old case table / grid.
- * Newspaper clipping archive layout.
- * Keeps: cases data, filters, case routing (setSelectedCase).
+ * CaseArchive — The Judicial Records Repository
+ * 
+ * Replaces generic grids with a cinematic "Stacked Judicial Archives" design.
+ * Features:
+ * - Stacked paper visual depth
+ * - Historical timestamps
+ * - Risk & Status indicators
+ * - Tracking ID preservation
  */
 export default function CaseArchive({ cases, onSelectCase, role }) {
+  const { t } = useLanguage();
+
   if (cases.length === 0) {
     return (
       <div
+        className="empty-archive"
         style={{
-          padding: "4rem 2rem",
+          padding: "5rem 2rem",
           textAlign: "center",
-          border: "2px dashed rgba(0,0,0,.1)",
+          border: "2px dashed var(--newsprint-gray)",
           background: "var(--paper-cream)",
+          borderRadius: "4px",
+          opacity: 0.7,
         }}
       >
-        <div style={{ fontSize: "3rem", marginBottom: "1rem", opacity: 0.3 }}>📁</div>
-        <h3
-          style={{
-            fontFamily: "var(--serif-display)",
-            fontSize: "1.5rem",
-            fontWeight: 700,
-            color: "var(--ink-black)",
-            marginBottom: ".5rem",
-          }}
-        >
-          No Archived Proceedings
+        <div style={{ fontSize: "3.5rem", marginBottom: "1.5rem", opacity: 0.3 }}>📁</div>
+        <h3 style={{ fontFamily: "var(--serif-display)", fontSize: "1.8rem", fontWeight: 700, color: "var(--ink-black)", marginBottom: ".5rem" }}>
+          Repository Empty
         </h3>
-        <p
-          style={{
-            fontFamily: "var(--serif-body)",
-            fontSize: "1rem",
-            color: "var(--newsprint-gray)",
-            opacity: 0.65,
-          }}
-        >
-          {role === "citizen"
-            ? "Enter your tracking ID above to find your case."
-            : "Upload and verify documents to build the case archive."}
+        <p style={{ fontFamily: "var(--serif-body)", fontSize: "1.1rem", color: "var(--newsprint-gray)", maxWidth: 400, margin: "0 auto" }}>
+          {role === "citizen" 
+            ? "Enter a tracking ID to retrieve specific proceedings from the archive." 
+            : "No proceedings have been archived yet. Process a document to begin."}
         </p>
       </div>
     );
   }
 
-  const statusMap = (c) => {
-    const risk = c.verified_actions?.[0]?.risk_level;
-    if (risk === "HIGH") return { label: "Critical", cls: "status-critical", color: "var(--red-bright)" };
-    if (risk === "MEDIUM") return { label: "Review", cls: "status-review", color: "var(--amber-warn)" };
-    return { label: "Verified", cls: "status-verified", color: "var(--green-verified)" };
+  const getStatusStyle = (c) => {
+    const status = c.status?.toUpperCase() || "VERIFIED";
+    const risk = c.verified_actions?.[0]?.risk_level || "LOW";
+    
+    if (status === "PENDING") return { label: "Pending Review", color: "var(--newsprint-gray)", bg: "rgba(0,0,0,0.05)" };
+    if (status === "ESCALATED") return { label: "Escalated", color: "var(--red-bright)", bg: "rgba(139,26,26,0.08)" };
+    
+    if (risk === "HIGH") return { label: "Critical Priority", color: "var(--red-bright)", bg: "rgba(139,26,26,0.05)" };
+    if (risk === "MEDIUM") return { label: "Action Required", color: "var(--amber-warn)", bg: "rgba(180,130,0,0.05)" };
+    return { label: "Verified Record", color: "var(--green-verified)", bg: "rgba(45,106,79,0.05)" };
   };
 
   return (
-    <div>
-      {/* Section heading */}
-      <h2
-        style={{
-          fontFamily: "var(--serif-display)",
-          fontSize: "1.6rem",
-          fontWeight: 700,
-          letterSpacing: "-.02em",
-          color: "var(--ink-black)",
-          marginBottom: "1.5rem",
-          paddingBottom: "1rem",
-          borderBottom: "2px solid var(--newsprint-gray)",
-        }}
-      >
-        Archived Proceedings
-      </h2>
+    <div className="judicial-archive-section">
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "2rem", borderBottom: "3px solid var(--ink-black)", paddingBottom: "1rem" }}>
+        <div>
+          <h2 style={{ fontFamily: "var(--serif-display)", fontSize: "2.2rem", fontWeight: 900, letterSpacing: "-.03em", color: "var(--ink-black)", marginBottom: "0.2rem" }}>
+            {role === "officer" ? t("verifiedJudicialArchive") : t("publicLegalRecords")}
+          </h2>
+          <p style={{ fontFamily: "var(--sans)", fontSize: ".65rem", letterSpacing: ".2em", textTransform: "uppercase", color: "var(--newsprint-gray)", opacity: 0.6 }}>
+            Historical Legal Memory System • {cases.length} Records
+          </p>
+        </div>
+        <div style={{ fontFamily: "var(--sans)", fontSize: ".7rem", fontWeight: 700, color: "var(--newsprint-gray)" }}>
+          VOLUME {new Date().getFullYear()}.IV
+        </div>
+      </div>
 
-      {/* Clippings Grid */}
-      <div
-        className="clippings-grid"
+        <div
+        className="archive-stack-grid"
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-          gap: "1.5rem",
+          gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+          gap: "2.5rem",
         }}
       >
         {cases.map((c, i) => {
-          const st = statusMap(c);
+          const st = getStatusStyle(c);
           const primaryAction = c.verified_actions?.[0] || {};
+          const displayDate = c.timestamp ? new Date(c.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : "Recently Archived";
+
           return (
             <motion.div
               key={c.file_id || i}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: i * 0.07 }}
+              initial={{ opacity: 0, y: 30, rotateX: 10 }}
+              animate={{ opacity: 1, y: 0, rotateX: 0 }}
+              transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: i * 0.08 }}
               onClick={() => onSelectCase(c)}
+              className="archive-entry-card"
               style={{
-                border: "1px solid var(--newsprint-gray)",
-                padding: "1rem",
-                background: "var(--paper-cream)",
-                cursor: "pointer",
                 position: "relative",
-                boxShadow: "2px 2px 0px rgba(0,0,0,.1)",
-                transition: "all .3s cubic-bezier(.25,.46,.45,.94)",
+                cursor: "pointer",
+                perspective: "1000px"
               }}
-              whileHover={{ y: -4, boxShadow: "4px 8px 16px rgba(0,0,0,.12)" }}
             >
-              {/* Dept tag */}
-              <div
-                style={{
-                  fontFamily: "var(--sans)",
-                  fontSize: ".62rem",
-                  letterSpacing: ".15em",
-                  textTransform: "uppercase",
-                  color: "var(--newsprint-gray)",
-                  opacity: 0.55,
-                  marginBottom: ".4rem",
-                  fontWeight: 600,
-                }}
-              >
-                {primaryAction.department || "Legal"}
-              </div>
+              {/* Stacked Paper Effect - Background Layers */}
+              <div style={{ position: "absolute", top: 4, left: 4, right: -4, bottom: -4, background: "var(--card-bg)", border: "1px solid var(--border-dim)", zIndex: 1, opacity: 0.5, boxShadow: "0 2px 4px rgba(0,0,0,0.05)" }} />
+              <div style={{ position: "absolute", top: 8, left: 8, right: -8, bottom: -8, background: "var(--card-bg)", border: "1px solid var(--border-dim)", zIndex: 0, opacity: 0.3, boxShadow: "0 2px 4px rgba(0,0,0,0.05)" }} />
 
-              {/* Title */}
-              <div
+              {/* Main Content Layer */}
+              <motion.div
+                whileHover={{ y: -12, x: -6, rotateZ: -1 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="luxury-border paper-emboss"
                 style={{
-                  fontFamily: "var(--serif-display)",
-                  fontSize: "1rem",
-                  fontWeight: 700,
-                  lineHeight: 1.3,
-                  color: "var(--ink-black)",
-                  marginBottom: ".6rem",
-                  letterSpacing: "-.01em",
-                }}
-              >
-                {c.summary?.slice(0, 80) || "Legal Proceeding"}
-                {c.summary?.length > 80 ? "..." : ""}
-              </div>
-
-              {/* Tracking ID */}
-              {c.tracking_id && (
-                <div
-                  style={{
-                    fontFamily: "var(--sans)",
-                    fontSize: ".62rem",
-                    letterSpacing: ".12em",
-                    textTransform: "uppercase",
-                    color: "var(--newsprint-gray)",
-                    opacity: 0.45,
-                    marginBottom: ".8rem",
-                  }}
-                >
-                  {c.tracking_id}
-                </div>
-              )}
-
-              {/* Meta */}
-              <div
-                style={{
+                  position: "relative",
+                  zIndex: 2,
+                  background: "var(--card-bg)",
+                  padding: "1.8rem",
+                  height: "100%",
                   display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-end",
-                  paddingTop: ".8rem",
-                  borderTop: "1px dotted rgba(0,0,0,.12)",
-                  gap: ".5rem",
+                  flexDirection: "column",
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
                 }}
               >
-                <div
-                  style={{
-                    fontFamily: "var(--sans)",
-                    fontSize: ".65rem",
-                    color: "var(--newsprint-gray)",
-                    opacity: 0.45,
-                  }}
-                >
-                  {primaryAction.deadline || (c.timestamp && new Date(c.timestamp).toLocaleDateString("en-IN")) || "—"}
+                {/* Archive Header */}
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.2rem" }}>
+                  <div style={{ fontFamily: "var(--sans)", fontSize: ".6rem", letterSpacing: ".15em", textTransform: "uppercase", fontWeight: 800, color: "var(--text-muted)", opacity: 0.5 }}>
+                    RECORD ID: {c.tracking_id || c.file_id?.substring(0, 8).toUpperCase() || "N/A"}
+                  </div>
+                  <div style={{ fontFamily: "var(--sans)", fontSize: ".6rem", color: "var(--text-muted)", opacity: 0.4 }}>
+                    {displayDate}
+                  </div>
                 </div>
-                <span
-                  style={{
-                    fontFamily: "var(--sans)",
-                    fontSize: ".58rem",
-                    letterSpacing: ".12em",
-                    textTransform: "uppercase",
-                    fontWeight: 700,
-                    padding: ".15rem .4rem",
-                    border: `1px solid ${st.color}`,
-                    color: st.color,
-                  }}
-                >
-                  {st.label}
-                </span>
-              </div>
+
+                {/* Title / Summary */}
+                <h3 style={{ 
+                  fontFamily: "var(--serif-display)", 
+                  fontSize: "1.25rem", 
+                  fontWeight: 800, 
+                  lineHeight: 1.25, 
+                  color: "var(--text-main)", 
+                  marginBottom: "1rem",
+                  flexGrow: 1
+                }}>
+                  {c.summary?.slice(0, 100) || "Judicial Proceeding Detail"}
+                  {c.summary?.length > 100 ? "..." : ""}
+                </h3>
+
+                {/* Meta Details */}
+                <div style={{ borderTop: "1px solid var(--border-dim)", paddingTop: "1rem", marginTop: "auto" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <div style={{ fontFamily: "var(--sans)", fontSize: ".6rem", textTransform: "uppercase", letterSpacing: ".1em", color: "var(--text-muted)", opacity: 0.6, marginBottom: "0.2rem" }}>
+                        Primary Department
+                      </div>
+                      <div style={{ fontFamily: "var(--serif-body)", fontSize: ".85rem", fontWeight: 700, color: "var(--text-main)" }}>
+                        {primaryAction.department || "Public Law"}
+                      </div>
+                    </div>
+                    
+                    <JudicialStatusStamp status={c.status} />
+                  </div>
+                </div>
+
+                {/* Archived Watermark */}
+                <div style={{ 
+                  position: "absolute", 
+                  bottom: "20%", 
+                  right: "10%", 
+                  transform: "rotate(-15deg)", 
+                  fontFamily: "var(--serif-display)", 
+                  fontSize: "2rem", 
+                  fontWeight: 900, 
+                  color: "var(--text-main)", 
+                  opacity: 0.03,
+                  pointerEvents: "none",
+                  textTransform: "uppercase" 
+                }}>
+                  ARCHIVED
+                </div>
+              </motion.div>
             </motion.div>
           );
         })}
